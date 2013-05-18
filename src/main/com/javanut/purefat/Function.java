@@ -11,20 +11,17 @@ import org.slf4j.helpers.MessageFormatter;
 class Function extends Number {
 
     final static String        labelWrap = "{}";
-    
-    private String           text;
-    private byte            paramCount;
-    private String           label;
-    
-    private final Number[]         params;
-    private final int              privateIdx;
-
-    private Boolean          validated;//once validated no need to validate a second time.
-    private Double           eval;//once evaluated no need to evaluate a second time
-    
     private static final int MAX_PARAMS = 7;
     private static final Logger logger = LoggerFactory.getLogger(Function.class);
     
+    //May be many millions of these objects so we must
+    //only keep data if it cant be computed any other way.
+    private String                  text;
+    private String                  label;
+    private byte                    paramCount;
+    private final Number[]         params;
+    private final int              privateIdx;
+
     public Function(int idx) {
         privateIdx = idx;
         params = new Number[MAX_PARAMS];
@@ -41,8 +38,6 @@ class Function extends Number {
     private final void reset(String label, String expressionText) {
         this.label = label;
         this.text = expressionText;
-        this.validated = null;
-        this.eval = null;
     }
 
     public String stackElement() {
@@ -67,6 +62,14 @@ class Function extends Number {
     
     public final boolean init(String label, String expressionText) {
         this.paramCount = 0;
+        this.params[0] = null;
+        this.params[1] = null;
+        this.params[2] = null;
+        this.params[3] = null;
+        this.params[4] = null;
+        this.params[5] = null;
+        this.params[6] = null;
+        
         reset(label,expressionText);
         usageData(label, expressionText);
         return true;
@@ -87,6 +90,12 @@ class Function extends Number {
                       Number p0) {
         this.paramCount = 1;
         this.params[0] = p0;
+        this.params[1] = null;
+        this.params[2] = null;
+        this.params[3] = null;
+        this.params[4] = null;
+        this.params[5] = null;
+        this.params[6] = null;
         
         reset(label,expressionText);
         return true;
@@ -97,6 +106,11 @@ class Function extends Number {
         this.paramCount = 2;
         this.params[0] = p0;
         this.params[1] = p1;
+        this.params[2] = null;
+        this.params[3] = null;
+        this.params[4] = null;
+        this.params[5] = null;
+        this.params[6] = null;
         
         reset(label,expressionText);
         
@@ -156,6 +170,10 @@ class Function extends Number {
         this.params[0] = p0;
         this.params[1] = p1;
         this.params[2] = p2;
+        this.params[3] = null;
+        this.params[4] = null;
+        this.params[5] = null;
+        this.params[6] = null;
         
         reset(label,expressionText);
         return true;
@@ -168,6 +186,9 @@ class Function extends Number {
         this.params[1] = p1;
         this.params[2] = p2;
         this.params[3] = p3;
+        this.params[4] = null;
+        this.params[5] = null;
+        this.params[6] = null;
         
         reset(label,expressionText);
         return true;
@@ -181,6 +202,8 @@ class Function extends Number {
         this.params[2] = p2;
         this.params[3] = p3;
         this.params[4] = p4;
+        this.params[5] = null;
+        this.params[6] = null;
         
         reset(label,expressionText);
         return true;
@@ -195,6 +218,7 @@ class Function extends Number {
         this.params[3] = p3;
         this.params[4] = p4;
         this.params[5] = p5;
+        this.params[6] = null;
         
         reset(label,expressionText);
         return true;
@@ -220,20 +244,6 @@ class Function extends Number {
         return Arrays.copyOf(params, paramCount);
     }
     
-    public boolean isValid() {
-        if (null==validated) {
-            assert(text.indexOf("}{")==-1): "Bad expression text "+text;
-            assert(text.indexOf("}(")==-1): "Bad expression text "+text;
-            assert(text.indexOf("){")==-1): "Bad expression text "+text;
-            assert(text.indexOf("2{")==-1): "Bad expression text "+text;
-            //todo how to fix numbers? regex?
-            //check count of {} matches array length
-            //TODO: validate recusrively
-            validated = true;//hack
-            
-        }
-        return validated;
-    }
     
     public String decoratedLabel(RingBuffer ringbuffer) {
         Number[] parms = params();
@@ -284,42 +294,25 @@ class Function extends Number {
     
     @Override
     public int intValue() {
-        if (null==eval) {
-            eval();
-        }
-        return eval.intValue();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public long longValue() {
-        if (null==eval) {
-            eval();
-        }
-        return eval.longValue();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public float floatValue() {
-        if (null==eval) {
-            eval();
-        }
-        return eval.floatValue();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public double doubleValue() {
-        if (null==eval) {
-            eval();
-        }
-        return eval.doubleValue();
+        throw new UnsupportedOperationException();
     }
 
 
-    
-    private void eval() {
-        //do it now
-        
-    }
 
     public String label() {
         return "${"+label+"}";

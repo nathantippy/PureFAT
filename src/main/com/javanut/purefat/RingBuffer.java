@@ -1,6 +1,12 @@
 package com.javanut.purefat;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,15 +38,15 @@ class RingBuffer  {
         funcShell = new Function[bufferSize];
         int j = bufferSize;
         while (--j>=0) {
-            bufferRefs[j] =  new WeakReference(null);
+            bufferRefs[j] =  new WeakReference<Number>(null);
             funcShell[j] = new Function(j);
         }
         
     }
 
-    public void useLessRAM(boolean useLessRam) {
+    public boolean useLessRAM(boolean useLessRam) {
         shouldGrowArray = !useLessRam;
-        
+        return true;
     }
 
     public final Function get(Number key) {
@@ -79,6 +85,9 @@ class RingBuffer  {
     * Looks forward for next empty slot, because these are the oldest its very
     * likely that one will be found at the next index.
     * 
+    * TODO: use lock in each shell so no sync is needed over the walk.
+    * TODO: use lock for resize to remove sync
+    * 
     * @return
     */
     public final Function findFuncShell(WeakReference<Number> tempRef) {
@@ -91,6 +100,25 @@ class RingBuffer  {
                bufferRefs[i] = tempRef; //grab my index
                return funcShell[i];
            }
+           
+           //test for remove numbers
+           if (i<bufferSize && !temp.isEmpty()) {
+               int hash = System.identityHashCode(bufferRefs[i].get());
+               boolean ok;
+               synchronized(temp) {
+                   ok = temp.remove(hash); 
+               }
+               if (ok) {
+                     bufferRefs[i].clear();
+                     bufferPos = i; //store for next usage
+                     bufferRefs[i] = tempRef; //grab my index
+                     return funcShell[i];
+               }
+               
+           }
+           
+
+
            i = bufferPos;
            
            byte loopCount = 0;
@@ -100,14 +128,23 @@ class RingBuffer  {
                }
                if (i==bufferPos) {
                    //looped back to original position must gc and run again
+                   
+                   //if configured to grow array for faster speed gc is skipped
+                   if (!shouldGrowArray) {
+                       System.err.println("GC");
+                       System.gc();//NOTE: may be slower but greatly saves RAM
+                   }
+                   
+                   //only force growth if this is the 2rd pass with nothing found.
                    boolean mustGrowArray = ++loopCount>1; 
+                   //NOTE: if this does not work must implment log based solution.
                    if (mustGrowArray || shouldGrowArray) {
                        loopCount=0;
                        //step = 0;
                        //Grow the array with factorial
                        int newBufferSize = lastBufferSize + bufferSize;
                        try {
-                           System.gc();
+                           @SuppressWarnings("unchecked")
                            WeakReference<Number>[] newBufferRefs = new WeakReference[newBufferSize];
                            
                            logger.info("growing ring buffer to {} reason:{} ",newBufferSize, mustGrowArray ? "Must for volume" : "Should for performance" );
@@ -117,7 +154,7 @@ class RingBuffer  {
                            System.arraycopy(funcShell, 0, newBufferExpr, 0, bufferSize);
                            int j = newBufferSize;
                            while (--j>=bufferSize) {
-                               newBufferRefs[j] = new WeakReference(null);
+                               newBufferRefs[j] = new WeakReference<Number>(null);
                                newBufferExpr[j] = new Function(j);
                            }
                            
@@ -143,5 +180,43 @@ class RingBuffer  {
            return funcShell[i];
        }
    }
+
+    Set<Number> temp = new HashSet<Number>();
+    
+    //TODO: rewrite as ring of items to dispose
+    public void dispose(Number number) {
+        int identityHashCode = System.identityHashCode(number);
+        synchronized(temp) {
+            temp.add(identityHashCode);
+//            temp.add(number);
+//            if (temp.size()>10) {
+//               // synchronized(temp) {
+//                    for(Number n:temp) {
+//                        int j = bufferRefs.length;
+//                        while (--j>=0) {
+//                            WeakReference<Number> num = bufferRefs[j];
+//                            if (num.get()==n) {
+//                                funcShell[j].init("", "");
+//                                num.clear();
+//                            }
+//                        }
+//                    }
+//                    temp.clear();
+//               // }
+//            }
+        }
+      //  temp.addLast(number);
+       
+//        int j = bufferRefs.length;
+//        while (--j>=0) {
+//            WeakReference<Number> num = bufferRefs[j];
+//            if (num.get()==number) {
+//                System.err.println("found!");
+//                funcShell[j].init("", "");
+//                num.clear();
+//                return;
+//            }
+//        }
+    }
 
 }

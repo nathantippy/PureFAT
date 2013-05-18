@@ -34,8 +34,17 @@ public class PureFAT {
 
     private static final String MESSAGE = "Value does not match required constraints, check log for details.";
     private static final Logger logger = LoggerFactory.getLogger(PureFAT.class);
-    static final RingBuffer ringBuffer = new RingBuffer(1000000);
+    
+    //TODO: starting with large enought value makes bigg diference.
+    //TODO: must serialize final value for next start up.
+    static RingBuffer ringBuffer;
 
+    static {
+        
+        assert(init());
+        
+        
+    }
     
     //TODO: if this can be done as an annotation then this might be a great open source project
     //TODO: build parser validation so expressions can be used by wolframalpha
@@ -50,11 +59,17 @@ public class PureFAT {
     //TODO: optional MongoDB adapter for logback for processing later, map reduce?
     
     //TODO: send expected value and get report of the expected inputs to make that happen.
+    //TODO: reading byte codes may auto generate the template to greatly simplify the usages.
     
     public static void useLessRAM(boolean useLessRAM) {
-        ringBuffer.useLessRAM(useLessRAM);
+        assert(ringBuffer.useLessRAM(useLessRAM));
     }
     
+    private static boolean init() {
+        ringBuffer = new RingBuffer(20000000);
+        return true;
+    }
+
     public static boolean logExpression(Number keyNumber) {
         Function expression;
         //synchronized(expressionMap) {
@@ -69,18 +84,34 @@ public class PureFAT {
         
     }
     
+    public static boolean dispose(Number number) {
+        //GC this number in RingBuffer, on pass 2 start to check for these?
+        ringBuffer.dispose(number);
+        return true;
+    }
+    
+    /**
+     * Same as dispose but write details to log for analysis later
+     * @param number
+     */
+    public static void archive(Number number) {
+        
+    }
+    
     public static boolean isFinite(Number number, String label) {
         if (null==number || Double.isNaN(number.doubleValue()) || Double.isInfinite(number.doubleValue())) {
-            logExpressionTree(number,label);
-            new Exception("bad number:"+number).printStackTrace();
+            auditTrail(number,FATFormat.table);
+            //logExpressionTree(number,label);
+            //new Exception("bad number:"+number).printStackTrace();
             return false;
         }
         return true;
     }
     public static boolean isNotZero(Number number, String label) {
         if (number.doubleValue()==0d) {
-            logExpressionTree(number,label);
-            new Exception("bad number:"+number).printStackTrace();
+            auditTrail(number,FATFormat.table);
+            //logExpressionTree(number,label);
+            //new Exception("bad number:"+number).printStackTrace();
             return false;
         }
         return true;
@@ -88,8 +119,9 @@ public class PureFAT {
     
     public static boolean isFinite(Number number) {
         if (null==number || Double.isNaN(number.doubleValue()) || Double.isInfinite(number.doubleValue())) {
-            logExpressionTree(number,"isFinite");
-            new Exception("bad number:"+number).printStackTrace();
+            auditTrail(number,FATFormat.table);
+            //logExpressionTree(number,"isFinite");
+            //new Exception("bad number:"+number).printStackTrace();
             return false;
         }
         return true;
@@ -97,8 +129,9 @@ public class PureFAT {
     
     public static boolean isPositive(Number number,String label) {
         if (null==number || number.doubleValue()<0 || Double.isNaN(number.doubleValue()) || Double.isInfinite(number.doubleValue())) {
-            logExpressionTree(number,label);
-            new Exception(label+" "+number+" is not positive").printStackTrace();
+            auditTrail(number,FATFormat.table);
+            //logExpressionTree(number,label);
+            //new Exception(label+" "+number+" is not positive").printStackTrace();
             return false;
         }
         return true;
