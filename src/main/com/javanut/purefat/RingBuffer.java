@@ -22,6 +22,8 @@ class RingBuffer  {
     private int bufferPos = 0;
     private boolean shouldGrowArray = true; //default is to go fast as possible
     private Object lock = new Object();
+
+    Set<Number> dispose = new HashSet<Number>();
     
     /**
      * 
@@ -102,11 +104,11 @@ class RingBuffer  {
            }
            
            //test for remove numbers
-           if (i<bufferSize && !temp.isEmpty()) {
+           if (i<bufferSize && !dispose.isEmpty()) {
                int hash = System.identityHashCode(bufferRefs[i].get());
                boolean ok;
-               synchronized(temp) {
-                   ok = temp.remove(hash); 
+               synchronized(dispose) {
+                   ok = dispose.remove(hash); 
                }
                if (ok) {
                      bufferRefs[i].clear();
@@ -114,7 +116,6 @@ class RingBuffer  {
                      bufferRefs[i] = tempRef; //grab my index
                      return funcShell[i];
                }
-               
            }
            
 
@@ -127,7 +128,12 @@ class RingBuffer  {
                    i = 0;
                }
                if (i==bufferPos) {
-                   //looped back to original position must gc and run again
+                   //looped back to original position
+                   //if any disposed values remain they must have already been removed
+                   if (!dispose.isEmpty()) {
+                       logger.warn(dispose.size()+" unnessisary call(s) to dispose");
+                       dispose.clear();
+                   }
                    
                    //if configured to grow array for faster speed gc is skipped
                    if (!shouldGrowArray) {
@@ -181,42 +187,12 @@ class RingBuffer  {
        }
    }
 
-    Set<Number> temp = new HashSet<Number>();
     
-    //TODO: rewrite as ring of items to dispose
     public void dispose(Number number) {
         int identityHashCode = System.identityHashCode(number);
-        synchronized(temp) {
-            temp.add(identityHashCode);
-//            temp.add(number);
-//            if (temp.size()>10) {
-//               // synchronized(temp) {
-//                    for(Number n:temp) {
-//                        int j = bufferRefs.length;
-//                        while (--j>=0) {
-//                            WeakReference<Number> num = bufferRefs[j];
-//                            if (num.get()==n) {
-//                                funcShell[j].init("", "");
-//                                num.clear();
-//                            }
-//                        }
-//                    }
-//                    temp.clear();
-//               // }
-//            }
+        synchronized(dispose) {
+            dispose.add(identityHashCode);
         }
-      //  temp.addLast(number);
-       
-//        int j = bufferRefs.length;
-//        while (--j>=0) {
-//            WeakReference<Number> num = bufferRefs[j];
-//            if (num.get()==number) {
-//                System.err.println("found!");
-//                funcShell[j].init("", "");
-//                num.clear();
-//                return;
-//            }
-//        }
     }
 
 }
