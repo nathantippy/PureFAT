@@ -98,11 +98,55 @@ public class PureFAT {
         
     }
     
+    public static boolean isNear(Number number, Number near, double epsilon) {
+        if (Math.abs(number.doubleValue()-near.doubleValue())>epsilon) {
+            auditTrail(number,FATFormat.table);
+            logger.error("{} not near {} epsilon"+epsilon,number,near);
+            return false;
+        }
+        return true;
+    }
+    
+    public static boolean isGTE(Number number, Number gte) {
+        if (number.doubleValue()<gte.doubleValue()) {
+            auditTrail(number,FATFormat.table);
+            logger.error("{} ! >= {}",number,gte);
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean isGT(Number number, Number gte) {
+        if (number.doubleValue()<=gte.doubleValue()) {
+            auditTrail(number,FATFormat.table);
+            logger.error("{} ! > {}",number,gte);
+            return false;
+        }
+        return true;
+    }
+    
+    public static boolean isLTE(Number number, Number lte) {
+        if (number.doubleValue()>lte.doubleValue()) {
+            auditTrail(number,FATFormat.table);
+            logger.error("{} ! <= {}",number,lte);
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean isLT(Number number, Number lte) {
+        if (number.doubleValue()>=lte.doubleValue()) {
+            auditTrail(number,FATFormat.table);
+            logger.error("{} ! < {}",number,lte);
+            return false;
+        }
+        return true;
+    }
+    
     public static boolean isFinite(Number number, String label) {
         if (null==number || Double.isNaN(number.doubleValue()) || Double.isInfinite(number.doubleValue())) {
             auditTrail(number,FATFormat.table);
-            //logExpressionTree(number,label);
-            //new Exception("bad number:"+number).printStackTrace();
+            
             return false;
         }
         return true;
@@ -110,8 +154,6 @@ public class PureFAT {
     public static boolean isNotZero(Number number, String label) {
         if (number.doubleValue()==0d) {
             auditTrail(number,FATFormat.table);
-            //logExpressionTree(number,label);
-            //new Exception("bad number:"+number).printStackTrace();
             return false;
         }
         return true;
@@ -120,8 +162,6 @@ public class PureFAT {
     public static boolean isFinite(Number number) {
         if (null==number || Double.isNaN(number.doubleValue()) || Double.isInfinite(number.doubleValue())) {
             auditTrail(number,FATFormat.table);
-            //logExpressionTree(number,"isFinite");
-            //new Exception("bad number:"+number).printStackTrace();
             return false;
         }
         return true;
@@ -130,8 +170,6 @@ public class PureFAT {
     public static boolean isPositive(Number number,String label) {
         if (null==number || number.doubleValue()<0 || Double.isNaN(number.doubleValue()) || Double.isInfinite(number.doubleValue())) {
             auditTrail(number,FATFormat.table);
-            //logExpressionTree(number,label);
-            //new Exception(label+" "+number+" is not positive").printStackTrace();
             return false;
         }
         return true;
