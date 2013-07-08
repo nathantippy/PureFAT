@@ -1,10 +1,11 @@
 package com.javanut.purefat;
 
-public class MetaFunction {
+public class FunMetaData {
 
+    static FunMetaData NONE = new FunMetaData(new StackTraceElement[0]);
     private final StackTraceElement callInfo;
-    
-    public MetaFunction(StackTraceElement[] stackTrace) {
+
+    FunMetaData(StackTraceElement[] stackTrace) {
         int i = 0;
         while (++i<stackTrace.length) {
             if (!stackTrace[i].getClassName().contains("purefat")) {
@@ -12,7 +13,7 @@ public class MetaFunction {
                 return;
             }
         }
-        this.callInfo = stackTrace[stackTrace.length-1];
+        this.callInfo = new StackTraceElement("Unknown","Unknown","Unknown",0);
     }
     
     public String stackElement() {

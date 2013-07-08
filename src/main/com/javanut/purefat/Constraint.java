@@ -1,137 +1,92 @@
 package com.javanut.purefat;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import static com.javanut.purefat.PureFAT.*;
 
 public class Constraint {
 
-    private final Constraint next;
-    private final String label;
+    private static final Logger logger = LoggerFactory.getLogger(Constraint.class);
     
-    public Constraint(String label) {
-        this.next = null;
-        this.label = label;
+    private Constraint() {
+        
+    }
+
+    final static boolean isNear(Number number, Number near, double epsilon) {
+        if (Math.abs(number.doubleValue()-near.doubleValue())>epsilon) {
+            logAuditTrail(number,FATFormat.table);
+            logger.error("{} not near {} epsilon"+epsilon,number,near);
+            return false;
+        }
+        return true;
     }
     
-    protected Constraint(Constraint next, String label) {
-        this.next = next;
-        this.label = label;
-    }
-    
-    public Constraint gteZero() {
-        return new Constraint(this,"Must be zero or positive") {
-            @Override
-            boolean validate(Number boxed) {
-                if (boxed.doubleValue()<0d) {
-                    logExpressionTree(boxed, label()+' '+label);
-                    return false;
-                }
-                return next.validate(boxed);
-            }
-            @Override 
-            String label() {
-                return next.label();
-            }
-        };
-    }
-    
-    public Constraint lteZero() {
-        return new Constraint(this, "Must be zero or negative") {
-            @Override
-            boolean validate(Number boxed) {
-                if (boxed.doubleValue()>0d) {
-                    logExpressionTree(boxed, label()+' '+label);
-                    return false;
-                }
-                return next.validate(boxed);
-            }
-            @Override 
-            String label() {
-                return next.label();
-            }
-        };
-    }
-    
-    public Constraint gtZero() {
-        return new Constraint(this,"Must be positive") {
-            @Override
-            boolean validate(Number boxed) {
-                if (boxed.doubleValue()<=0d) {
-                    logExpressionTree(boxed, label()+' '+label);
-                    return false;
-                }
-                return next.validate(boxed);
-            }
-            @Override 
-            String label() {
-                return next.label();
-            }
-        };
-    }
-    
-    public Constraint ltZero() {
-        return new Constraint(this, "Must be negative") {
-            @Override
-            boolean validate(Number boxed) {
-                if (boxed.doubleValue()>=0d) {
-                    logExpressionTree(boxed, label()+' '+label);
-                    return false;
-                }
-                return next.validate(boxed);
-            }
-            @Override 
-            String label() {
-                return next.label();
-            }
-        };
-    }
-    
-    public Constraint isNumber() {
-        return new Constraint(this,"Must be number") {
-            @Override
-            boolean validate(Number boxed) {
-                if (Double.isNaN(boxed.doubleValue())) {
-                    logExpressionTree(boxed, label()+' '+label);
-                    return false;
-                }
-                return next.validate(boxed);
-            }
-            @Override 
-            String label() {
-                return next.label();
-            }
-        };
-    }
-    
-    public Constraint isFinite() {
-        return new Constraint(this,"Must be finite") {
-            @Override
-            boolean validate(Number boxed) {
-                if (Double.isInfinite(boxed.doubleValue())) {
-                    logExpressionTree(boxed, label()+' '+label);
-                    return false;
-                }
-                return next.validate(boxed);
-            }
-            @Override 
-            String label() {
-                return next.label();
-            }
-        };
-    }
-    
-    String label() {
-        return label;
-    }
-    
-    /**
-     * override for custom range checking.
-     * 
-     * @param boxed
-     * @return
-     */
-    
-    boolean validate(Number boxed) {
+    final static boolean isGTE(Number number, Number gte) {
+        if (number.doubleValue()<gte.doubleValue()) {
+            logAuditTrail(number,FATFormat.table);
+            logger.error("{} ! >= {}",number,gte);
+            return false;
+        }
         return true;
     }
 
+    final static boolean isGT(Number number, Number gte) {
+        if (number.doubleValue()<=gte.doubleValue()) {
+            logAuditTrail(number,FATFormat.table);
+            logger.error("{} ! > {}",number,gte);
+            return false;
+        }
+        return true;
+    }
+    
+    final static boolean isLTE(Number number, Number lte) {
+        if (number.doubleValue()>lte.doubleValue()) {
+            logAuditTrail(number,FATFormat.table);
+            logger.error("{} ! <= {}",number,lte);
+            return false;
+        }
+        return true;
+    }
+
+    final static boolean isLT(Number number, Number lte) {
+        if (number.doubleValue()>=lte.doubleValue()) {
+            logAuditTrail(number,FATFormat.table);
+            logger.error("{} ! < {}",number,lte);
+            return false;
+        }
+        return true;
+    }
+    
+    final static boolean isFinite(Number number, String label) {
+        if (null==number || Double.isNaN(number.doubleValue()) || Double.isInfinite(number.doubleValue())) {
+            logAuditTrail(number,FATFormat.table);
+            
+            return false;
+        }
+        return true;
+    }
+    final static boolean isNotZero(Number number, String label) {
+        if (number.doubleValue()==0d) {
+            logAuditTrail(number,FATFormat.table);
+            return false;
+        }
+        return true;
+    }
+    
+    final static boolean isFinite(Number number) {
+        if (null==number || Double.isNaN(number.doubleValue()) || Double.isInfinite(number.doubleValue())) {
+            logAuditTrail(number,FATFormat.table);
+            return false;
+        }
+        return true;
+    }
+    
+    final static boolean isPositive(Number number,String label) {
+        if (null==number || number.doubleValue()<0 || Double.isNaN(number.doubleValue()) || Double.isInfinite(number.doubleValue())) {
+            logAuditTrail(number,FATFormat.table);
+            return false;
+        }
+        return true;
+    }
+    
 }

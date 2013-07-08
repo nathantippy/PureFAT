@@ -1,37 +1,57 @@
 package com.javanut.purefat;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
+import org.slf4j.helpers.MessageFormatter;
 
 class RingBuffer  {
     
-    private static final Logger logger = LoggerFactory.getLogger(RingBuffer.class);
-    private int bufferSize;
-    private int lastBufferSize;
     
+    private final static int RING_BUFFER_SIZE_DEFAULT = 1<<24;//16M;
+    private final static String RING_BUFFER_SIZE_KEY = "purefat.ringbuffer.size";
+    
+    private final static boolean RING_BUFFER_GROW_DEFAULT = true;
+    private final static String RING_BUFFER_GROW_KEY = "purefat.ringbuffer.grow";
+    
+    
+    private static final Logger logger = LoggerFactory.getLogger(RingBuffer.class);
+    private final Object lock = new Object();
+    private final Set<Number> dispose = new HashSet<Number>();
+    
+    private int                     bufferSize;
+    private int                     lastBufferSize;
     private WeakReference<Number>[] bufferRefs;
     private Function[]              funcShell;
-    private int bufferPos = 0;
-    private boolean shouldGrowArray = true; //default is to go fast as possible
-    private Object lock = new Object();
+    private int                     bufferPos = 0;
 
-    Set<Number> dispose = new HashSet<Number>();
+    //default is to go fast as possible, this is not final because it may be
+    //turned off later if an out of memory exception is encountered.
+    private boolean                shouldGrowArray = RING_BUFFER_GROW_DEFAULT;
+
+    private final Map<String, Map<String,FunMetaData>> functionMeta = new HashMap<String,Map<String,FunMetaData>>();
+    
+    public RingBuffer() {
+        this(Integer.parseInt(System.getProperty(RING_BUFFER_SIZE_KEY, Integer.toString(RING_BUFFER_SIZE_DEFAULT))),
+             Boolean.parseBoolean(System.getProperty(RING_BUFFER_GROW_KEY, Boolean.toString(RING_BUFFER_GROW_DEFAULT)))
+             );
+    }
     
     /**
      * 
      * @param initialSize starting buffer size for expressions
      * @param useLessRam if true use more aggressive GC and less RAM, is slower
      */
-    public RingBuffer(int initialSize) {
+    private RingBuffer(int initialSize, boolean grow) {
         
+        shouldGrowArray = grow;
         bufferSize     = initialSize;
         lastBufferSize = initialSize;
         //did not help because all still get added to map unless gc is called!
@@ -44,11 +64,6 @@ class RingBuffer  {
             funcShell[j] = new Function(j);
         }
         
-    }
-
-    public boolean useLessRAM(boolean useLessRam) {
-        shouldGrowArray = !useLessRam;
-        return true;
     }
 
     public final Function get(Number key) {
@@ -83,6 +98,55 @@ class RingBuffer  {
         }
     }
 
+    public final boolean save(Number number, String label, String expression, Number p1) {
+        saveMetaData(label, expression);
+        Function f = findFuncShell(number);
+        f.init(number, label, expression, p1);
+        
+        //pass this into logger.   f.params()
+        //need logging onlyh impl in PFImpl?
+        
+        return true;
+    }
+
+    
+    public final boolean save(Number number, String label, String expression, Number p1, Number p2) {
+        saveMetaData(label, expression);
+        Function f = findFuncShell(number);
+        f.init(number, label, expression, p1, p2);
+        return true;
+    }
+    
+    public final boolean save(Number number, String label, String expression, Number p1, Number p2, Number p3) {
+        saveMetaData(label, expression);
+        return findFuncShell(number).init(number, label, expression, p1, p2, p3);
+    }
+    
+    public final boolean save(Number number, String label, String expression, Number p1, Number p2, Number p3, Number p4) {
+        saveMetaData(label, expression);
+        return findFuncShell(number).init(number, label, expression, p1, p2, p3, p4);
+    }
+    
+    public final boolean save(Number number, String label, String expression, Number p1, Number p2, Number p3, Number p4, Number p5) {
+        saveMetaData(label, expression);
+        return findFuncShell(number).init(number, label, expression, p1, p2, p3, p4, p5);
+    }
+    
+    public final boolean save(Number number, String label, String expression, Number p1, Number p2, Number p3, Number p4, Number p5, Number p6) {
+        saveMetaData(label, expression);
+        return findFuncShell(number).init(number, label, expression, p1, p2, p3, p4, p5, p6);
+    }
+    
+    public final boolean save(Number number, String label, String expression, Number p1, Number p2, Number p3, Number p4, Number p5, Number p6, Number p7) {
+        saveMetaData(label, expression);
+        return findFuncShell(number).init(number, label, expression, p1, p2, p3, p4, p5, p6, p7);
+    }
+    
+    public final boolean save(Number number, String label, String expression, Number[] params) {
+        saveMetaData(label, expression);
+        return findFuncShell(number).init(number, label, expression, params);
+    }
+    
     /**
     * Looks forward for next empty slot, because these are the oldest its very
     * likely that one will be found at the next index.
@@ -92,7 +156,8 @@ class RingBuffer  {
     * 
     * @return
     */
-    public final Function findFuncShell(WeakReference<Number> tempRef) {
+    private final Function findFuncShell(Number number) {
+        WeakReference<Number> tempRef = new WeakReference<Number>(number);
        //always start with oldest position 
        synchronized(lock) {
            
@@ -131,7 +196,7 @@ class RingBuffer  {
                    //looped back to original position
                    //if any disposed values remain they must have already been removed
                    if (!dispose.isEmpty()) {
-                       logger.warn(dispose.size()+" unnessisary call(s) to dispose");
+                       logger.trace(dispose.size()+" unnessisary call(s) to dispose cleared.");
                        dispose.clear();
                    }
                    
@@ -187,12 +252,49 @@ class RingBuffer  {
        }
    }
 
-    
-    public void dispose(Number number) {
+    public boolean dispose(Number number) {
         int identityHashCode = System.identityHashCode(number);
         synchronized(dispose) {
             dispose.add(identityHashCode);
         }
+        return true;
     }
 
+    public final FunMetaData metaData(Function fun) {
+        String label = fun.label();
+        String expressionText = fun.text();
+        Map<String,FunMetaData> m = functionMeta.get(expressionText);
+        if (null == m) {
+            return FunMetaData.NONE;
+        }
+        FunMetaData fmd = m.get(label);
+        if (null==fmd) {
+            return FunMetaData.NONE;
+        } else {
+            return fmd;
+        }
+    }
+    
+    private final void saveMetaData(String label, String expressionText) {
+        Map<String,FunMetaData> m = functionMeta.get(expressionText);
+        if (null == m) {
+            m = new HashMap<String,FunMetaData>();
+            functionMeta.put(expressionText, m);
+        }
+        if (!m.containsKey(label)) {
+            m.put(label,new FunMetaData(Thread.currentThread().getStackTrace()));
+        }
+    }
+
+    public String labelInterpolate(Function fun) {
+        Number[] parms = fun.params();
+        int i = parms.length;
+        String[] labels = new String[i];
+        while (--i>=0) {
+            Function f = get(parms[i],fun);
+            labels[i] = (null==f ? parms[i].toString() : f.label() );
+        }
+        return MessageFormatter.arrayFormat(fun.text(), labels).getMessage();
+    }
+    
 }

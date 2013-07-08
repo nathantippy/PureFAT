@@ -1,6 +1,7 @@
 package com.javanut.purefat;
 
-import static com.javanut.purefat.PureFAT.*;
+//import static com.javanut.purefat.PureFAT.*;
+
 
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -21,7 +22,7 @@ public class SpeedComparisons {
         
         //side effect: this also initialized the internal static ring buffer
         //             therefore its not counted by the timer, by design.
-        PureFAT.useLessRAM(true);//this is the default but here for clarity
+        //PureFAT.useLessRAM(true);//this is the default but here for clarity
         
         double baseTime = speedTestUnboxed();
         System.out.println();
@@ -34,8 +35,8 @@ public class SpeedComparisons {
         temp = speedTestNaiveAutoBoxed();
         System.out.println("change "+((temp/baseTime)-1)+"x slower");
         
-        temp = speedTestBoxedAssertAudited();
-        System.out.println("change "+((temp/baseTime)-1)+"x slower");
+  //      temp = speedTestBoxedAssertAudited();
+  //      System.out.println("change "+((temp/baseTime)-1)+"x slower");
         
         baseTime = Math.min(speedTestUnboxed(),baseTime);
         System.out.println();
@@ -46,12 +47,20 @@ public class SpeedComparisons {
         temp = speedTestNaiveAutoBoxed();
         System.out.println("change "+((temp/baseTime)-1)+"x slower SECOND");
         
+        temp = speedTestForceAudited(new PFNone(),"boxed forced no checks");
+        System.out.println("change "+((temp/baseTime)-1)+"x slower");
+
+        //Test does NOT use the PFDefault implementation because it changes 
+        //behavior based on -ea and makes testing harder.
+        System.setProperty("purefat.ringbuffer.grow", "true");//helps speed up the test
+        PFVerbose strictImpl = new PFVerbose();
+        temp = speedTestForceAudited(strictImpl,"boxed forced audited");
+        System.out.println("change "+((temp/baseTime)-1)+"x slower");
+        //must let go of this instance because we dont have the RAM for two.
+        strictImpl=null;
+        
         temp = speedTestBoxedAssertAudited();
         System.out.println("change "+((temp/baseTime)-1)+"x slower SECOND");
-
-        temp = speedTestForceAudited();
-        System.out.println("change "+((temp/baseTime)-1)+"x slower");
-        
     }
     
     
@@ -120,18 +129,19 @@ public class SpeedComparisons {
     }
     
     
-    public double speedTestForceAudited() {
+    public double speedTestForceAudited(PFImpl impl, String label) {
+        
+        //Can not use singleton static interface to ensure this test is not 
+        //modified by -ea so PFImpl is passed in.
         
         long start = System.currentTimeMillis();
         double j = max;
         while (j>=min) {
-            Double jBox = new Double(j);
-            saveLabel(jBox,"j");
+            Double jBox = impl.audit(j,"j",PFImpl.LABEL_WRAP,j);
             double i = max;
             while (i>=min) {
-                Double iBox = new Double(i);
-                saveLabel(iBox,"i");
-                Double value = distanceBoxedSavedExpression(jBox,iBox);
+                Double iBox = impl.audit(i,"i",PFImpl.LABEL_WRAP,i);
+                Double value = distanceBoxedSavedExpression(jBox,iBox,impl);
                 assertFalse(Double.isNaN(value));
                 i-=step;
             }
@@ -140,7 +150,7 @@ public class SpeedComparisons {
         long duration = System.currentTimeMillis()-start;
         
         double msPerCall = ((double)duration)/callCount;
-        System.out.println("boxed audited duration:"+duration+" count:"+callCount+" perCall:"+msPerCall);
+        System.out.println(label+" duration:"+duration+" count:"+callCount+" perCall:"+msPerCall);
         return msPerCall;
     }
     
@@ -150,10 +160,10 @@ public class SpeedComparisons {
         long start = System.currentTimeMillis();
         double j = max;
         while (j>=min) {
-            Double jBox = label(j,"j");
+            Double jBox = PureFAT.audit(j,"j");
             double i = max;
             while (i>=min) {
-                Double iBox = label(i,"i");
+                Double iBox = PureFAT.audit(i,"i");
                 Double value = distanceBoxedAssertAudited(jBox,iBox);
                 assertFalse(Double.isNaN(value));
                 i-=step;
@@ -205,7 +215,7 @@ public class SpeedComparisons {
     private final Double distanceBoxedAssertAudited(Double a, Double b) {
         //if assert is on we need to skip this test becase it will be costly like saveExpression above
         
-        return fun(Math.sqrt((a*a) + (b*b)),"distance",
+        return PureFAT.audit(Math.sqrt((a*a) + (b*b)),"distance",
                     "sqrt(({}^2)+({}^2))", a, b);
     }
     
@@ -213,13 +223,13 @@ public class SpeedComparisons {
      * Does the same work as above but always saves the expression.
      * @param a
      * @param b
+     * @param internalStrictImpl 
      * @return
      */
-    private final Double distanceBoxedSavedExpression(Double a, Double b) {
+    private final Double distanceBoxedSavedExpression(Double a, Double b, PFImpl impl) {
         
-      Double result = new Double(Math.sqrt((a*a) + (b*b)));
-      saveExpression(result, "distance", "sqrt(({}^2)+({}^2))", a, b);
-      return result;
+        return impl.audit(Math.sqrt((a*a) + (b*b)), "distance", "sqrt(({}^2)+({}^2))", a, b);
+        
     }
     
 }
