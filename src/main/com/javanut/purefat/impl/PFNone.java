@@ -1,7 +1,9 @@
-package com.javanut.purefat;
+package com.javanut.purefat.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.javanut.purefat.FATReport;
 
 public class PFNone implements PFImpl {
     
@@ -11,7 +13,7 @@ public class PFNone implements PFImpl {
      * @see com.javanut.purefat.PFImpl#dispose(java.lang.Number)
      */
     @Override
-    public final void dispose(Number number) {
+    public final void flush(Number number) {
     }
 
     
@@ -82,7 +84,7 @@ public class PFNone implements PFImpl {
      * @see com.javanut.purefat.PFImpl#logAuditTrail(java.lang.Number, com.javanut.purefat.FATFormat)
      */
     @Override
-    public final void logAuditTrail(Number keyNumber, FATFormat format) {
+    public final void logAuditTrail(Number keyNumber, FATReport format) {
     }
     
     /* (non-Javadoc)
@@ -163,5 +165,69 @@ public class PFNone implements PFImpl {
     @Override
     public final Double audit(double value, String label, String expressionText, Number[] params) {
         return new Double(value);
+    }
+    
+    /* (non-Javadoc)
+     * @see com.javanut.purefat.PFImpl#audit(int, java.lang.String, java.lang.String, java.lang.Number)
+     */
+    @Override
+    public final Integer audit(int value, String label, String expressionText, Number p1) {
+        return new Integer(value);
+    }
+
+    /* (non-Javadoc)
+     * @see com.javanut.purefat.PFImpl#audit(int, java.lang.String, java.lang.String, java.lang.Number, java.lang.Number)
+     */
+    @Override
+    public final Integer audit(int value, String label, String expressionText, Number p1, Number p2) {
+        return new Integer(value);
+    }
+
+    /* (non-Javadoc)
+     * @see com.javanut.purefat.PFImpl#audit(int, java.lang.String, java.lang.String, java.lang.Number, java.lang.Number, java.lang.Number)
+     */
+    @Override
+    public final Integer audit(int value, String label, String expressionText, Number p1, Number p2, Number p3) {
+        return new Integer(value);
+    }
+
+    /* (non-Javadoc)
+     * @see com.javanut.purefat.PFImpl#audit(int, java.lang.String, java.lang.String, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number)
+     */
+    @Override
+    public final Integer audit(int value, String label, String expressionText, Number p1, Number p2, Number p3, Number p4) {
+        return new Integer(value);
+    }
+
+    /* (non-Javadoc)
+     * @see com.javanut.purefat.PFImpl#audit(int, java.lang.String, java.lang.String, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number)
+     */
+    @Override
+    public final Integer audit(int value, String label, String expressionText, Number p1, Number p2, Number p3, Number p4, Number p5) {
+        return new Integer(value);
+    }
+
+    /* (non-Javadoc)
+     * @see com.javanut.purefat.PFImpl#audit(int, java.lang.String, java.lang.String, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number)
+     */
+    @Override
+    public final Integer audit(int value, String label, String expressionText, Number p1, Number p2, Number p3, Number p4, Number p5, Number p6) {
+        return new Integer(value);
+    }
+
+    /* (non-Javadoc)
+     * @see com.javanut.purefat.PFImpl#audit(int, java.lang.String, java.lang.String, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number)
+     */
+    @Override
+    public final Integer audit(int value, String label, String expressionText, Number p1, Number p2, Number p3, Number p4, Number p5, Number p6, Number p7) {
+        return new Integer(value);
+    }
+    
+    /* (non-Javadoc)
+     * @see com.javanut.purefat.PFImpl#audit(int, java.lang.String, java.lang.String, java.lang.Number[])
+     */
+    @Override
+    public final Integer audit(int value, String label, String expressionText, Number[] params) {
+        return new Integer(value);
     }
 }

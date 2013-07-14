@@ -4,23 +4,27 @@ import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
 import org.slf4j.Logger;
+import org.slf4j.helpers.MessageFormatter;
 
-public enum FATFormat { //TODO: rename as auditTrail .
+import com.javanut.purefat.impl.Function;
+import com.javanut.purefat.impl.FunctionAuditTrail;
+
+public enum FATReport {
    table {
        private final String EQUALS_SYMBOL = " = ";
        
     @Override
-    public boolean log(Logger logger, RingBuffer ringBuffer, Number keyNumber, StackTraceElement[] stackTrace) {
+    public boolean log(Logger logger, FunctionAuditTrail functionAuditTrail, Number keyNumber, StackTraceElement[] stackTrace) {
         LinkedHashMap<Number, Function> table =  new LinkedHashMap<Number,Function>();
-        populateTable(ringBuffer, keyNumber, table);
-        logTable(logger, ringBuffer, table);
+        populateTable(functionAuditTrail, keyNumber, table);
+        logTable(logger, functionAuditTrail, table);
         logger.info("called from: {}",firstExternalLocation(stackTrace));
         return true;
     }
     
     @SuppressWarnings("unchecked")
-    private void populateTable(RingBuffer ringBuffer, Number keyNumber, LinkedHashMap<Number,Function> table) {
-        Function ex = (Function)ringBuffer.get(keyNumber);
+    private void populateTable(FunctionAuditTrail functionAuditTrail, Number keyNumber, LinkedHashMap<Number,Function> table) {
+        Function ex = (Function)functionAuditTrail.get(keyNumber);
         if (null!=ex) {
             if (!ex.isLabel()) {
                 for(Number param: ex.params()) {
@@ -29,7 +33,7 @@ public enum FATFormat { //TODO: rename as auditTrail .
                         table.put(keyNumber,ex);
                     } else {
                         if (null!=param) {
-                            populateTable(ringBuffer,param,table);
+                            populateTable(functionAuditTrail,param,table);
                         }
                     }
                 }
@@ -42,7 +46,7 @@ public enum FATFormat { //TODO: rename as auditTrail .
         }
     }
     
-    private void logTable(Logger logger, RingBuffer ringBuffer, LinkedHashMap<Number, Function> table) {
+    private void logTable(Logger logger, FunctionAuditTrail functionAuditTrail, LinkedHashMap<Number, Function> table) {
         StringBuilder builder = new StringBuilder();
         builder.append("\n");
         
@@ -63,12 +67,12 @@ public enum FATFormat { //TODO: rename as auditTrail .
                 
                 leftJustify(builder,21+EQUALS_SYMBOL.length()+13,"");
                 builder.append(EQUALS_SYMBOL)
-                       .append(ringBuffer.labelInterpolate(entry.getValue()))
+                       .append(labelInterpolate(functionAuditTrail, entry.getValue()))
                        .append("\n");
                 
                 leftJustify(builder,21+EQUALS_SYMBOL.length()+13,"");
                 builder.append(EQUALS_SYMBOL)
-                       .append(ringBuffer.metaData(entry.getValue()).stackElement())
+                       .append(functionAuditTrail.metaData(entry.getValue()).stackElement())
                        .append("\n");
             }
         }
@@ -76,13 +80,10 @@ public enum FATFormat { //TODO: rename as auditTrail .
         
     }
     
-
-    
-    
 }, 
    tree {
     @Override
-    public boolean log(Logger logger, RingBuffer ringBuffer, Number keyNumber, StackTraceElement[] stackTrace) {
+    public boolean log(Logger logger, FunctionAuditTrail functionAuditTrail, Number keyNumber, StackTraceElement[] stackTrace) {
         if (keyNumber==null) {
             return false;
         }
@@ -95,7 +96,7 @@ public enum FATFormat { //TODO: rename as auditTrail .
         
           //TODO: urgent.need tree to print breadth first not depth first and as a table with duplicates removed!!
         
-            buildExpressionTree(ringBuffer,keyNumber, builder, "");
+            buildExpressionTree(functionAuditTrail,keyNumber, builder, "");
        // }
         builder.append("\n").append(label);
         
@@ -108,8 +109,8 @@ public enum FATFormat { //TODO: rename as auditTrail .
     
     
     @SuppressWarnings("unchecked")
-    private void buildExpressionTree(RingBuffer ringBuffer, Number keyNumber, StringBuilder target, String tab) {
-        Function ex = (Function)ringBuffer.get(keyNumber);
+    private void buildExpressionTree(FunctionAuditTrail functionAuditTrail, Number keyNumber, StringBuilder target, String tab) {
+        Function ex = (Function)functionAuditTrail.get(keyNumber);
         if (null!=ex) {
             String newtab = tab+"    ";
             
@@ -119,7 +120,7 @@ public enum FATFormat { //TODO: rename as auditTrail .
                         target.append(newtab).append(ex.toString()).append('\n');
                     } else {
                         if (null!=param) {
-                            buildExpressionTree(ringBuffer,param,target,newtab);
+                            buildExpressionTree(functionAuditTrail,param,target,newtab);
                         }
                     }
                 }
@@ -148,9 +149,9 @@ public enum FATFormat { //TODO: rename as auditTrail .
 }, 
    expression {
     @Override
-    public boolean log(Logger logger, RingBuffer ringBuffer, Number keyNumber, StackTraceElement[] stackTrace) {
+    public boolean log(Logger logger, FunctionAuditTrail functionAuditTrail, Number keyNumber, StackTraceElement[] stackTrace) {
 
-            Function expression = (Function) ringBuffer.get(keyNumber);
+            Function expression = (Function) functionAuditTrail.get(keyNumber);
             if (null!=expression) {
                 expression.log(keyNumber.toString()+"=",logger);//TODO: deep log and shallow log?
                 return true;
@@ -161,7 +162,7 @@ public enum FATFormat { //TODO: rename as auditTrail .
     }
 };
 
-public abstract boolean log(Logger logger, RingBuffer ringBuffer, Number keyNumber, StackTraceElement[] stackTrace);
+public abstract boolean log(Logger logger, FunctionAuditTrail functionAuditTrail, Number keyNumber, StackTraceElement[] stackTrace);
 
 private static final void leftJustify(StringBuilder builder,
         int minKeyLength,
@@ -182,6 +183,18 @@ private static final String firstExternalLocation(StackTraceElement[] stackTrace
         }
     }
     return "Unknown";
+}
+
+
+private static String labelInterpolate(FunctionAuditTrail functionAuditTrail, Function fun) {
+    Number[] parms = fun.params();
+    int i = parms.length;
+    String[] labels = new String[i];
+    while (--i>=0) {
+        Function f = functionAuditTrail.get(parms[i],fun);
+        labels[i] = (null==f ? parms[i].toString() : f.label() );
+    }
+    return MessageFormatter.arrayFormat(fun.text(), labels).getMessage();
 }
 
 }

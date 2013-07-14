@@ -1,4 +1,4 @@
-package com.javanut.purefat;
+package com.javanut.purefat.impl;
 
 import java.util.Arrays;
 import org.slf4j.Logger;
@@ -7,7 +7,8 @@ import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 import org.slf4j.helpers.MessageFormatter;
 
-class Function {
+
+public class Function {
 
     private static final Logger     logger = LoggerFactory.getLogger(Function.class);
     
@@ -24,44 +25,18 @@ class Function {
         params = new Number[PFImpl.MAX_PARAMS];
     }
     
-    Function(Number undef) {
+    public Function(Number undef) {
         //missing value
         privateIdx = -1;
         params = new Number[]{undef};
         label = "undefined";
         text = PFImpl.LABEL_WRAP;
     }
-    
-    
-    private final void wrapExpr(Number number, String expression, StringBuilder sb) {
-        sb.append(number).append('=').append(expression).append(' ');
-    }
 
-    private final StringBuilder wrapId(int id, StringBuilder sb) {
-        return sb.append('P').append(Long.toHexString(id)).append(' ');
-    }
     
-    private final void log(Number number, String expressionText) {
-        
-        //log or no log there is no if
-        
-//        if (PureFAT.isDebugEnabled) { //TODO: so slow its unusable!!
-////            StringBuilder sb = new StringBuilder(100);
-////            //TODO: need to add a machine id
-////            wrapId(System.identityHashCode(number), sb);
-////            wrapExpr(number, expressionText, sb);
-////            int i = 0;
-////            while (i<paramCount) {
-////                wrapId(System.identityHashCode(params[i++]), sb);
-////            }
-////            //TODO: what can I use this for?
-////            //Marker marker = MarkerFactory.getMarker("test");
-////            PureFAT.logger.debug(sb.toString(),params);
-//        }
-    }
+
     
-    public final boolean init(Number number,
-                                String label, 
+    public final boolean init(String label, 
                                 String expressionText) {
         this.paramCount = 0;
         this.params[0] = null;
@@ -74,25 +49,21 @@ class Function {
         
         this.label = label;
         this.text = expressionText;
-        log(number, expressionText);
         return true;
     }
     
-    public final boolean init(Number number,
-                                String label, 
+    public final boolean init(String label, 
                                 String expressionText,
                                 Number[] paramArray) {
         this.paramCount = (byte) paramArray.length;
         System.arraycopy(paramArray, 0, params, 0, paramArray.length);
         this.label = label;
         this.text = expressionText;
-        log(number, expressionText);
         return true;
     }
 
     
-    public final boolean init(Number number,
-                                String label, String expressionText,
+    public final boolean init(String label, String expressionText,
                                 Number p0) {
         this.paramCount = 1;
         this.params[0] = p0;
@@ -105,13 +76,12 @@ class Function {
         
         this.label = label;
         this.text = expressionText;
-        log(number, expressionText);
         return true;
     }
 
 
     
-    public final boolean init(Number number, String label, String expressionText,
+    public final boolean init(String label, String expressionText,
                                 Number p0,Number p1) {
         this.paramCount = 2;
         this.params[0] = p0;
@@ -124,11 +94,10 @@ class Function {
         
         this.label = label;
         this.text = expressionText;
-        log(number, expressionText);
         return true;
     }
     
-    public final boolean init(Number number, String label, String expressionText,
+    public final boolean init(String label, String expressionText,
                                 Number p0,Number p1,Number p2) {
         this.paramCount = 3;
         this.params[0] = p0;
@@ -141,11 +110,10 @@ class Function {
         
         this.label = label;
         this.text = expressionText;
-        log(number, expressionText);
         return true;
     }
     
-    public final boolean init(Number number, String label, String expressionText,
+    public final boolean init(String label, String expressionText,
                                 Number p0,Number p1,Number p2,Number p3) {
         this.paramCount = 4;
         this.params[0] = p0;
@@ -158,11 +126,10 @@ class Function {
         
         this.label = label;
         this.text = expressionText;
-        log(number, expressionText);
         return true;
     }
     
-    public final boolean init(Number number, String label, String expressionText,
+    public final boolean init(String label, String expressionText,
                                 Number p0,Number p1,Number p2,Number p3,Number p4) {
         this.paramCount = 5;
         this.params[0] = p0;
@@ -175,11 +142,10 @@ class Function {
         
         this.label = label;
         this.text = expressionText;
-        log(number, expressionText);
         return true;
     }
     
-    public final boolean init(Number number, String label, String expressionText,
+    public final boolean init(String label, String expressionText,
                                 Number p0,Number p1,Number p2,Number p3,Number p4,Number p5) {
         this.paramCount = 6;
         this.params[0] = p0;
@@ -192,11 +158,10 @@ class Function {
         
         this.label = label;
         this.text = expressionText;
-        log(number, expressionText);
         return true;
     }
     
-    public final boolean init(Number number, String label, String expressionText,
+    public final boolean init(String label, String expressionText,
                                 Number p0,Number p1,Number p2,Number p3,Number p4,Number p5,Number p6) {
         this.paramCount = 7;
         this.params[0] = p0;
@@ -209,7 +174,6 @@ class Function {
         
         this.label = label;
         this.text = expressionText;
-        log(number, expressionText);
         return true;
     }
     
@@ -231,7 +195,7 @@ class Function {
     }
 
     public String label() {
-        return "${"+label+"}";
+        return label;//"${"+label+"}";
     }
 
     public boolean isLabel() {

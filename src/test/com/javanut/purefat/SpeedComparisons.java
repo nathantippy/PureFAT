@@ -4,6 +4,12 @@ package com.javanut.purefat;
 
 
 import org.junit.Test;
+
+import com.javanut.purefat.impl.PFImpl;
+import com.javanut.purefat.impl.PFNone;
+import com.javanut.purefat.impl.PFVerbose;
+import com.javanut.purefat.impl.RingBufferAuditTrail;
+
 import static org.junit.Assert.*;
 
 public class SpeedComparisons {
@@ -17,6 +23,12 @@ public class SpeedComparisons {
     
     
 
+    /**
+     * This is not really a test and can not fail.
+     * 
+     * The purpose of this code is for performance testing of new ideas.
+     * 
+     */
     @Test 
     public void speedTest() {
         
@@ -35,9 +47,6 @@ public class SpeedComparisons {
         temp = speedTestNaiveAutoBoxed();
         System.out.println("change "+((temp/baseTime)-1)+"x slower");
         
-  //      temp = speedTestBoxedAssertAudited();
-  //      System.out.println("change "+((temp/baseTime)-1)+"x slower");
-        
         baseTime = Math.min(speedTestUnboxed(),baseTime);
         System.out.println();
         
@@ -53,7 +62,7 @@ public class SpeedComparisons {
         //Test does NOT use the PFDefault implementation because it changes 
         //behavior based on -ea and makes testing harder.
         System.setProperty("purefat.ringbuffer.grow", "true");//helps speed up the test
-        PFVerbose strictImpl = new PFVerbose();
+        PFVerbose strictImpl = new PFVerbose(new RingBufferAuditTrail());
         temp = speedTestForceAudited(strictImpl,"boxed forced audited");
         System.out.println("change "+((temp/baseTime)-1)+"x slower");
         //must let go of this instance because we dont have the RAM for two.

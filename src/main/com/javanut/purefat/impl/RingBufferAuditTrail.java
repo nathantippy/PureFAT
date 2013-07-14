@@ -1,4 +1,4 @@
-package com.javanut.purefat;
+package com.javanut.purefat.impl;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
@@ -12,7 +12,8 @@ import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 import org.slf4j.helpers.MessageFormatter;
 
-class RingBuffer  {
+
+public class RingBufferAuditTrail implements FunctionAuditTrail  {
     
     
     private final static int RING_BUFFER_SIZE_DEFAULT = 1<<24;//16M;
@@ -22,7 +23,7 @@ class RingBuffer  {
     private final static String RING_BUFFER_GROW_KEY = "purefat.ringbuffer.grow";
     
     
-    private static final Logger logger = LoggerFactory.getLogger(RingBuffer.class);
+    private static final Logger logger = LoggerFactory.getLogger(RingBufferAuditTrail.class);
     private final Object lock = new Object();
     private final Set<Number> dispose = new HashSet<Number>();
     
@@ -38,7 +39,7 @@ class RingBuffer  {
 
     private final Map<String, Map<String,FunMetaData>> functionMeta = new HashMap<String,Map<String,FunMetaData>>();
     
-    public RingBuffer() {
+    public RingBufferAuditTrail() {
         this(Integer.parseInt(System.getProperty(RING_BUFFER_SIZE_KEY, Integer.toString(RING_BUFFER_SIZE_DEFAULT))),
              Boolean.parseBoolean(System.getProperty(RING_BUFFER_GROW_KEY, Boolean.toString(RING_BUFFER_GROW_DEFAULT)))
              );
@@ -49,7 +50,7 @@ class RingBuffer  {
      * @param initialSize starting buffer size for expressions
      * @param useLessRam if true use more aggressive GC and less RAM, is slower
      */
-    private RingBuffer(int initialSize, boolean grow) {
+    private RingBufferAuditTrail(int initialSize, boolean grow) {
         
         shouldGrowArray = grow;
         bufferSize     = initialSize;
@@ -98,53 +99,81 @@ class RingBuffer  {
         }
     }
 
+    /* (non-Javadoc)
+     * @see com.javanut.purefat.ExpressionWriter#save(java.lang.Number, java.lang.String, java.lang.String, java.lang.Number)
+     */
+    @Override
     public final boolean save(Number number, String label, String expression, Number p1) {
         saveMetaData(label, expression);
         Function f = findFuncShell(number);
-        f.init(number, label, expression, p1);
-        
-        //pass this into logger.   f.params()
-        //need logging onlyh impl in PFImpl?
-        
+        f.init(label, expression, p1);
         return true;
     }
 
     
+    /* (non-Javadoc)
+     * @see com.javanut.purefat.ExpressionWriter#save(java.lang.Number, java.lang.String, java.lang.String, java.lang.Number, java.lang.Number)
+     */
+    @Override
     public final boolean save(Number number, String label, String expression, Number p1, Number p2) {
         saveMetaData(label, expression);
         Function f = findFuncShell(number);
-        f.init(number, label, expression, p1, p2);
+        f.init(label, expression, p1, p2);
         return true;
     }
     
+    /* (non-Javadoc)
+     * @see com.javanut.purefat.ExpressionWriter#save(java.lang.Number, java.lang.String, java.lang.String, java.lang.Number, java.lang.Number, java.lang.Number)
+     */
+    @Override
     public final boolean save(Number number, String label, String expression, Number p1, Number p2, Number p3) {
         saveMetaData(label, expression);
-        return findFuncShell(number).init(number, label, expression, p1, p2, p3);
+        return findFuncShell(number).init(label, expression, p1, p2, p3);
     }
     
+    /* (non-Javadoc)
+     * @see com.javanut.purefat.ExpressionWriter#save(java.lang.Number, java.lang.String, java.lang.String, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number)
+     */
+    @Override
     public final boolean save(Number number, String label, String expression, Number p1, Number p2, Number p3, Number p4) {
         saveMetaData(label, expression);
-        return findFuncShell(number).init(number, label, expression, p1, p2, p3, p4);
+        return findFuncShell(number).init(label, expression, p1, p2, p3, p4);
     }
     
+    /* (non-Javadoc)
+     * @see com.javanut.purefat.ExpressionWriter#save(java.lang.Number, java.lang.String, java.lang.String, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number)
+     */
+    @Override
     public final boolean save(Number number, String label, String expression, Number p1, Number p2, Number p3, Number p4, Number p5) {
         saveMetaData(label, expression);
-        return findFuncShell(number).init(number, label, expression, p1, p2, p3, p4, p5);
+        return findFuncShell(number).init(label, expression, p1, p2, p3, p4, p5);
     }
     
+    /* (non-Javadoc)
+     * @see com.javanut.purefat.ExpressionWriter#save(java.lang.Number, java.lang.String, java.lang.String, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number)
+     */
+    @Override
     public final boolean save(Number number, String label, String expression, Number p1, Number p2, Number p3, Number p4, Number p5, Number p6) {
         saveMetaData(label, expression);
-        return findFuncShell(number).init(number, label, expression, p1, p2, p3, p4, p5, p6);
+        return findFuncShell(number).init(label, expression, p1, p2, p3, p4, p5, p6);
     }
     
+    /* (non-Javadoc)
+     * @see com.javanut.purefat.ExpressionWriter#save(java.lang.Number, java.lang.String, java.lang.String, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number)
+     */
+    @Override
     public final boolean save(Number number, String label, String expression, Number p1, Number p2, Number p3, Number p4, Number p5, Number p6, Number p7) {
         saveMetaData(label, expression);
-        return findFuncShell(number).init(number, label, expression, p1, p2, p3, p4, p5, p6, p7);
+        return findFuncShell(number).init(label, expression, p1, p2, p3, p4, p5, p6, p7);
     }
     
+    /* (non-Javadoc)
+     * @see com.javanut.purefat.ExpressionWriter#save(java.lang.Number, java.lang.String, java.lang.String, java.lang.Number[])
+     */
+    @Override
     public final boolean save(Number number, String label, String expression, Number[] params) {
         saveMetaData(label, expression);
-        return findFuncShell(number).init(number, label, expression, params);
+        return findFuncShell(number).init(label, expression, params);
     }
     
     /**
@@ -252,7 +281,7 @@ class RingBuffer  {
        }
    }
 
-    public boolean dispose(Number number) {
+    public boolean flush(Number number) {
         int identityHashCode = System.identityHashCode(number);
         synchronized(dispose) {
             dispose.add(identityHashCode);
@@ -261,14 +290,15 @@ class RingBuffer  {
     }
 
     public final FunMetaData metaData(Function fun) {
-        String label = fun.label();
         String expressionText = fun.text();
         Map<String,FunMetaData> m = functionMeta.get(expressionText);
         if (null == m) {
             return FunMetaData.NONE;
         }
+        
+        String label = fun.label();
         FunMetaData fmd = m.get(label);
-        if (null==fmd) {
+        if (null == fmd) {
             return FunMetaData.NONE;
         } else {
             return fmd;
@@ -286,15 +316,4 @@ class RingBuffer  {
         }
     }
 
-    public String labelInterpolate(Function fun) {
-        Number[] parms = fun.params();
-        int i = parms.length;
-        String[] labels = new String[i];
-        while (--i>=0) {
-            Function f = get(parms[i],fun);
-            labels[i] = (null==f ? parms[i].toString() : f.label() );
-        }
-        return MessageFormatter.arrayFormat(fun.text(), labels).getMessage();
-    }
-    
 }
