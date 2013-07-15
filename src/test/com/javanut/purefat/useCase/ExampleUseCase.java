@@ -11,5 +11,7 @@ public interface ExampleUseCase {
     Number computeResult(Number sample);
 
     void validatResult(Number result);
+    
+    boolean isFailureExpected(int index);
 
 }

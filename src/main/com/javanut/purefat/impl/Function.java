@@ -194,8 +194,8 @@ public class Function {
         logger.info(label+' '+text, params);
     }
 
-    public String label() {
-        return label;//"${"+label+"}";
+    public String labelTag() {
+        return "${"+label+"}";
     }
 
     public boolean isLabel() {
@@ -205,6 +205,10 @@ public class Function {
 
     public int getPrivateIndex() {
         return privateIdx;
+    }
+
+    public String labelName() {
+       return label;
     }
 
 

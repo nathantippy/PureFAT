@@ -8,7 +8,7 @@ import org.junit.Test;
 import com.javanut.purefat.impl.PFImpl;
 import com.javanut.purefat.impl.PFNone;
 import com.javanut.purefat.impl.PFVerbose;
-import com.javanut.purefat.impl.RingBufferAuditTrail;
+import com.javanut.purefat.impl.FunctionAuditTrailInternal;
 
 import static org.junit.Assert.*;
 
@@ -62,7 +62,7 @@ public class SpeedComparisons {
         //Test does NOT use the PFDefault implementation because it changes 
         //behavior based on -ea and makes testing harder.
         System.setProperty("purefat.ringbuffer.grow", "true");//helps speed up the test
-        PFVerbose strictImpl = new PFVerbose(new RingBufferAuditTrail());
+        PFVerbose strictImpl = new PFVerbose(new FunctionAuditTrailInternal());
         temp = speedTestForceAudited(strictImpl,"boxed forced audited");
         System.out.println("change "+((temp/baseTime)-1)+"x slower");
         //must let go of this instance because we dont have the RAM for two.
@@ -146,10 +146,15 @@ public class SpeedComparisons {
         long start = System.currentTimeMillis();
         double j = max;
         while (j>=min) {
-            Double jBox = impl.audit(j,"j",PFImpl.LABEL_WRAP,j);
+            
+            Double jBox = new Double(j); 
+            impl.audit(jBox,"j",PFImpl.LABEL_WRAP,j);
+            
             double i = max;
             while (i>=min) {
-                Double iBox = impl.audit(i,"i",PFImpl.LABEL_WRAP,i);
+                Double iBox = new Double(i);
+                impl.audit(iBox,"i",PFImpl.LABEL_WRAP,i);
+                
                 Double value = distanceBoxedSavedExpression(jBox,iBox,impl);
                 assertFalse(Double.isNaN(value));
                 i-=step;
@@ -237,7 +242,9 @@ public class SpeedComparisons {
      */
     private final Double distanceBoxedSavedExpression(Double a, Double b, PFImpl impl) {
         
-        return impl.audit(Math.sqrt((a*a) + (b*b)), "distance", "sqrt(({}^2)+({}^2))", a, b);
+        Double boxed = new Double(Math.sqrt((a*a) + (b*b)));
+        impl.audit(boxed, "distance", "sqrt(({}^2)+({}^2))", a, b);
+        return boxed;
         
     }
     

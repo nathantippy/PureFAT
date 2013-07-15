@@ -1,20 +1,16 @@
 package com.javanut.purefat.impl;
 
-import java.rmi.dgc.VMID;
-
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 import org.slf4j.helpers.MessageFormatter;
 
-import com.javanut.purefat.PureFAT;
+public class FunctionAuditTrailExternal implements FunctionAuditTrail {
 
-public class SLF4JAuditTrail implements FunctionAuditTrail {
-
-    private final static VMID instanceId = new VMID();
+    
     private final Logger pureFATLogger;
     
-    public SLF4JAuditTrail(Logger logger) {
+    public FunctionAuditTrailExternal(Logger logger) {
         pureFATLogger = logger;
     }
     
@@ -80,7 +76,7 @@ public class SLF4JAuditTrail implements FunctionAuditTrail {
         Marker idMarker = MarkerFactory.getMarker(id);
         marker.add(idMarker);
         
-        String machineId = instanceId.toString();
+        String machineId = Util.instanceId();
         marker.add(MarkerFactory.getMarker(machineId));
         
         sb.append(id);
@@ -108,7 +104,7 @@ public class SLF4JAuditTrail implements FunctionAuditTrail {
     }
 
     private final String wrapId(Number number) {
-        return "{P"+Long.toHexString(System.identityHashCode(number))+'}';
+        return "[PF"+Long.toHexString(System.identityHashCode(number))+']';
     }
 
     private Marker marker(String label, String expression) {

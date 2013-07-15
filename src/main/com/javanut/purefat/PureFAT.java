@@ -9,8 +9,8 @@ import com.javanut.purefat.impl.PFDefault;
 import com.javanut.purefat.impl.PFImpl;
 import com.javanut.purefat.impl.PFNone;
 import com.javanut.purefat.impl.PFVerbose;
-import com.javanut.purefat.impl.RingBufferAuditTrail;
-import com.javanut.purefat.impl.SLF4JAuditTrail;
+import com.javanut.purefat.impl.FunctionAuditTrailInternal;
+import com.javanut.purefat.impl.FunctionAuditTrailExternal;
 
 public class PureFAT {
     
@@ -53,16 +53,16 @@ public class PureFAT {
         
         if (isInternal) {
             if (isExternal) {
-                fat = new DualAuditTrail(new RingBufferAuditTrail(),new SLF4JAuditTrail(logger));
+                fat = new DualAuditTrail(new FunctionAuditTrailInternal(),new FunctionAuditTrailExternal(logger));
             } else {
-                fat = new RingBufferAuditTrail();
+                fat = new FunctionAuditTrailInternal();
             }
         } else {
             if (isExternal) {
-                fat = new SLF4JAuditTrail(logger);
+                fat = new FunctionAuditTrailExternal(logger);
             } else {
                 //if nothing is set use both (default)
-                fat = new DualAuditTrail(new RingBufferAuditTrail(),new SLF4JAuditTrail(logger));
+                fat = new DualAuditTrail(new FunctionAuditTrailInternal(),new FunctionAuditTrailExternal(logger));
             }
         }
         
@@ -88,10 +88,6 @@ public class PureFAT {
         pf.auditIsFinite(number);
     }
     
-    public static final void auditIsFinite(Number number,String label) {
-        pf.auditIsFinite(number, label);
-    }
-    
     public static final void auditIsGT(Number number,Number gt) {
         pf.auditIsGT(number, gt);
     }
@@ -112,88 +108,126 @@ public class PureFAT {
         pf.auditIsNear(number, near, epsilon);
     }
 
-    public static final void auditIsNotZero(Number number,String label) {
-        pf.auditIsNotZero(number, label);
+    public static final void auditIsNotZero(Number number) {
+        pf.auditIsNotZero(number);
     }
     
-    public static final void auditIsPositive(Number number,String label) {
-        pf.auditIsPositive(number, label);
+    public static final void auditIsPositive(Number number) {
+        pf.auditIsPositive(number);
     }
     
-    public static final void logAuditTrail(Number keyNumber, FATReport format) {
+    public static final void logAuditTrail(Number keyNumber, FATTemplate format) {
         pf.logAuditTrail(keyNumber, format);
     }
     
     public static final Double audit(double value, String label) {
-        return pf.audit(value, label);
+        Double boxed = new Double(value);
+        pf.audit(boxed, label);
+        return boxed;
     }
 
     public static final Integer audit(int value, String label) {
-        return pf.audit(value, label);
+        Integer boxed = new Integer(value);
+        pf.audit(boxed, label);
+        return boxed;
     }
 
     public static final Double audit(double value, String label, String expressionText, Number p1) {
-        return pf.audit(value, label, expressionText, p1);
+        Double boxed = new Double(value);
+        pf.audit(boxed, label, expressionText, p1);
+        return boxed;
     }
 
     public static final Double audit(double value, String label, String expressionText, Number p1, Number p2) {
-        return pf.audit(value, label, expressionText, p1, p2);
+        Double boxed = new Double(value);
+        pf.audit(boxed, label, expressionText, p1, p2);
+        return boxed;
     }
 
     public static final Double audit(double value, String label, String expressionText, Number p1, Number p2, Number p3) {
-        return pf.audit(value, label, expressionText, p1, p2, p3);
+        Double boxed = new Double(value);
+        pf.audit(boxed, label, expressionText, p1, p2, p3);
+        return boxed;
     }
 
     public static final Double audit(double value, String label, String expressionText, Number p1, Number p2, Number p3, Number p4) {
-        return pf.audit(value, label, expressionText, p1, p2, p3, p4);
+        Double boxed = new Double(value);
+        pf.audit(boxed, label, expressionText, p1, p2, p3, p4);
+        return boxed;
     }
 
     public static final Double audit(double value, String label, String expressionText, Number p1, Number p2, Number p3, Number p4, Number p5) {
-        return pf.audit(value, label, expressionText, p1, p2 ,p3, p4, p5);
+        Double boxed = new Double(value);
+        pf.audit(boxed, label, expressionText, p1, p2 ,p3, p4, p5);
+        return boxed;
     }
 
     public static final Double audit(double value, String label, String expressionText, Number p1, Number p2, Number p3, Number p4, Number p5, Number p6) {
-        return pf.audit(value, label, expressionText, p1, p2, p3, p4, p5, p6);
+        Double boxed = new Double(value);
+        pf.audit(boxed, label, expressionText, p1, p2, p3, p4, p5, p6);
+        return boxed;
     }
 
     public static final Double audit(double value, String label, String expressionText, Number p1, Number p2, Number p3, Number p4, Number p5, Number p6, Number p7) {
-        return pf.audit(value, label, expressionText, p1, p2, p3, p4, p5, p6, p7);
+        Double boxed = new Double(value);
+        pf.audit(boxed, label, expressionText, p1, p2, p3, p4, p5, p6, p7);
+        return boxed;
     }
     
     public static final Double audit(double value, String label, String expressionText, Number[] params) {
-        return pf.audit(value, label, expressionText, params);
+        Double boxed = new Double(value);
+        pf.audit(boxed, label, expressionText, params);
+        return boxed;
     }
     
     public static final Integer audit(int value, String label, String expressionText, Number p1) {
-        return pf.audit(value, label, expressionText, p1);
+        Integer boxed = new Integer(value);
+        pf.audit(boxed, label, expressionText, p1);
+        return boxed;
     }
 
     public static final Integer audit(int value, String label, String expressionText, Number p1, Number p2) {
-        return pf.audit(value, label, expressionText, p1, p2);
+        Integer boxed = new Integer(value);
+        pf.audit(boxed, label, expressionText, p1, p2);
+        return boxed;
     }
 
     public static final Integer audit(int value, String label, String expressionText, Number p1, Number p2, Number p3) {
-        return pf.audit(value, label, expressionText, p1, p2, p3);
+        Integer boxed = new Integer(value);
+        pf.audit(boxed, label, expressionText, p1, p2, p3);
+        return boxed;
     }
 
     public static final Integer audit(int value, String label, String expressionText, Number p1, Number p2, Number p3, Number p4) {
-        return pf.audit(value, label, expressionText, p1, p2, p3, p4);
+        Integer boxed = new Integer(value);
+        pf.audit(boxed, label, expressionText, p1, p2, p3, p4);
+        return boxed;
     }
 
     public static final Integer audit(int value, String label, String expressionText, Number p1, Number p2, Number p3, Number p4, Number p5) {
-        return pf.audit(value, label, expressionText, p1, p2 ,p3, p4, p5);
+        Integer boxed = new Integer(value);
+        pf.audit(boxed, label, expressionText, p1, p2 ,p3, p4, p5);
+        return boxed;
     }
 
     public static final Integer audit(int value, String label, String expressionText, Number p1, Number p2, Number p3, Number p4, Number p5, Number p6) {
-        return pf.audit(value, label, expressionText, p1, p2, p3, p4, p5, p6);
+        Integer boxed = new Integer(value);
+        pf.audit(boxed, label, expressionText, p1, p2, p3, p4, p5, p6);
+        return boxed;
     }
 
     public static final Integer audit(int value, String label, String expressionText, Number p1, Number p2, Number p3, Number p4, Number p5, Number p6, Number p7) {
-        return pf.audit(value, label, expressionText, p1, p2, p3, p4, p5, p6, p7);
+        Integer boxed = new Integer(value);
+        pf.audit(boxed, label, expressionText, p1, p2, p3, p4, p5, p6, p7);
+        return boxed;
     }
     
     public static final Integer audit(int value, String label, String expressionText, Number[] params) {
-        return pf.audit(value, label, expressionText, params);
+        Integer boxed = new Integer(value);
+        pf.audit(boxed, label, expressionText, params);
+        return boxed;
     }
-    //TODO: perhaps object creation and wrap should be here because it gets duplicated in pf.
+    
+    //TODO: add Number for each of these
+    
 }

@@ -1,6 +1,6 @@
 package com.javanut.purefat.impl;
 
-import com.javanut.purefat.FATReport;
+import com.javanut.purefat.FATTemplate;
 
 public interface PFImpl {
 
@@ -14,8 +14,6 @@ public interface PFImpl {
 
     void auditIsFinite(Number number);
 
-    void auditIsFinite(Number number, String label);
-
     void auditIsGT(Number number, Number lt);
 
     void auditIsGTE(Number number, Number lt);
@@ -26,64 +24,39 @@ public interface PFImpl {
 
     void auditIsNear(Number number, Number near, double epsilon);
 
-    void auditIsNotZero(Number number, String label);
+    void auditIsNotZero(Number number);
 
-    void auditIsPositive(Number number, String label);
+    void auditIsPositive(Number number);
 
-    void logAuditTrail(Number keyNumber, FATReport format);
+    void logAuditTrail(Number keyNumber, FATTemplate format);
 
-    Double audit(double value, String label);
+    void audit(Number value, String label);
 
-    Integer audit(int value, String label);
-
-    Double audit(double value, String label, String expressionText,
+    void audit(Number value, String label, String expressionText,
             Number p1);
 
-    Double audit(double value, String label, String expressionText,
+    void audit(Number value, String label, String expressionText,
             Number p1, Number p2);
 
-    Double audit(double value, String label, String expressionText,
+    void audit(Number value, String label, String expressionText,
             Number p1, Number p2, Number p3);
 
-    Double audit(double value, String label, String expressionText,
+    void audit(Number value, String label, String expressionText,
             Number p1, Number p2, Number p3, Number p4);
 
-    Double audit(double value, String label, String expressionText,
+    void audit(Number value, String label, String expressionText,
             Number p1, Number p2, Number p3, Number p4, Number p5);
 
-    Double audit(double value, String label, String expressionText,
+    void audit(Number value, String label, String expressionText,
             Number p1, Number p2, Number p3, Number p4, Number p5, Number p6);
 
-    Double audit(double value, String label, String expressionText,
+    void audit(Number value, String label, String expressionText,
             Number p1, Number p2, Number p3, Number p4, Number p5, Number p6,
             Number p7);
 
-    Double audit(double value, String label, String expressionText,
+    void audit(Number value, String label, String expressionText,
             Number[] params);
     
-    Integer audit(int value, String label, String expressionText,
-            Number p1);
 
-    Integer audit(int value, String label, String expressionText,
-            Number p1, Number p2);
-
-    Integer audit(int value, String label, String expressionText,
-            Number p1, Number p2, Number p3);
-
-    Integer audit(int value, String label, String expressionText,
-            Number p1, Number p2, Number p3, Number p4);
-
-    Integer audit(int value, String label, String expressionText,
-            Number p1, Number p2, Number p3, Number p4, Number p5);
-
-    Integer audit(int value, String label, String expressionText,
-            Number p1, Number p2, Number p3, Number p4, Number p5, Number p6);
-
-    Integer audit(int value, String label, String expressionText,
-            Number p1, Number p2, Number p3, Number p4, Number p5, Number p6,
-            Number p7);
-
-    Integer audit(int value, String label, String expressionText,
-            Number[] params);
 
 }

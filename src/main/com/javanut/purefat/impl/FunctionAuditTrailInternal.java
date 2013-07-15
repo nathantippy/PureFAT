@@ -13,7 +13,7 @@ import org.slf4j.MarkerFactory;
 import org.slf4j.helpers.MessageFormatter;
 
 
-public class RingBufferAuditTrail implements FunctionAuditTrail  {
+public class FunctionAuditTrailInternal implements FunctionAuditTrail  {
     
     
     private final static int RING_BUFFER_SIZE_DEFAULT = 1<<24;//16M;
@@ -22,8 +22,7 @@ public class RingBufferAuditTrail implements FunctionAuditTrail  {
     private final static boolean RING_BUFFER_GROW_DEFAULT = true;
     private final static String RING_BUFFER_GROW_KEY = "purefat.ringbuffer.grow";
     
-    
-    private static final Logger logger = LoggerFactory.getLogger(RingBufferAuditTrail.class);
+    private static final Logger logger = LoggerFactory.getLogger(FunctionAuditTrailInternal.class);
     private final Object lock = new Object();
     private final Set<Number> dispose = new HashSet<Number>();
     
@@ -39,7 +38,7 @@ public class RingBufferAuditTrail implements FunctionAuditTrail  {
 
     private final Map<String, Map<String,FunMetaData>> functionMeta = new HashMap<String,Map<String,FunMetaData>>();
     
-    public RingBufferAuditTrail() {
+    public FunctionAuditTrailInternal() {
         this(Integer.parseInt(System.getProperty(RING_BUFFER_SIZE_KEY, Integer.toString(RING_BUFFER_SIZE_DEFAULT))),
              Boolean.parseBoolean(System.getProperty(RING_BUFFER_GROW_KEY, Boolean.toString(RING_BUFFER_GROW_DEFAULT)))
              );
@@ -50,7 +49,7 @@ public class RingBufferAuditTrail implements FunctionAuditTrail  {
      * @param initialSize starting buffer size for expressions
      * @param useLessRam if true use more aggressive GC and less RAM, is slower
      */
-    private RingBufferAuditTrail(int initialSize, boolean grow) {
+    private FunctionAuditTrailInternal(int initialSize, boolean grow) {
         
         shouldGrowArray = grow;
         bufferSize     = initialSize;
@@ -296,7 +295,7 @@ public class RingBufferAuditTrail implements FunctionAuditTrail  {
             return FunMetaData.NONE;
         }
         
-        String label = fun.label();
+        String label = fun.labelName();
         FunMetaData fmd = m.get(label);
         if (null == fmd) {
             return FunMetaData.NONE;

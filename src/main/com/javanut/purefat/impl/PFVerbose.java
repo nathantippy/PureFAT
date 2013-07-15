@@ -3,7 +3,7 @@ package com.javanut.purefat.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.javanut.purefat.FATReport;
+import com.javanut.purefat.FATTemplate;
 
 public class PFVerbose implements PFImpl {
     
@@ -27,23 +27,20 @@ public class PFVerbose implements PFImpl {
      */
     @Override
     public final void auditIsFinite(Number number) {
-        Constraint.isFinite(number);
+        if (!Constraint.isFinite(number)) {
+            throw new FATConstraintViolation(); 
+        }
     }
-    
-    /* (non-Javadoc)
-     * @see com.javanut.purefat.PFImpl#auditIsFinite(java.lang.Number, java.lang.String)
-     */
-    @Override
-    public final void auditIsFinite(Number number,String label) {
-        Constraint.isFinite(number, label);
-    }
+
     
     /* (non-Javadoc)
      * @see com.javanut.purefat.PFImpl#auditIsGT(java.lang.Number, java.lang.Number)
      */
     @Override
     public final void auditIsGT(Number number,Number lt) {
-        Constraint.isGT(number,lt);
+        if (!Constraint.isGT(number,lt)) {
+            throw new FATConstraintViolation();
+        }
     }
     
     /* (non-Javadoc)
@@ -51,7 +48,9 @@ public class PFVerbose implements PFImpl {
      */
     @Override
     public final void auditIsGTE(Number number,Number lt) {
-        Constraint.isGTE(number,lt);
+        if (!Constraint.isGTE(number,lt)) {
+            throw new FATConstraintViolation();
+        }
     }
     
     /* (non-Javadoc)
@@ -59,7 +58,9 @@ public class PFVerbose implements PFImpl {
      */
     @Override
     public final void auditIsLT(Number number,Number lt) {
-        Constraint.isLT(number,lt);
+        if (!Constraint.isLT(number,lt)) {
+            throw new FATConstraintViolation();
+        }
     }
     
     /* (non-Javadoc)
@@ -67,7 +68,9 @@ public class PFVerbose implements PFImpl {
      */
     @Override
     public final void auditIsLTE(Number number,Number lte) {
-        Constraint.isLTE(number, lte);
+        if (!Constraint.isLTE(number, lte)) {
+            throw new FATConstraintViolation();
+        }
     }
     
     /* (non-Javadoc)
@@ -75,30 +78,36 @@ public class PFVerbose implements PFImpl {
      */
     @Override
     public final void auditIsNear(Number number, Number near, double epsilon) {
-        Constraint.isNear(number, near, epsilon);
+        if (!Constraint.isNear(number, near, epsilon)) {
+            throw new FATConstraintViolation();
+        }
     }
 
     /* (non-Javadoc)
      * @see com.javanut.purefat.PFImpl#auditIsNotZero(java.lang.Number, java.lang.String)
      */
     @Override
-    public final void auditIsNotZero(Number number,String label) {
-        Constraint.isNotZero(number,label);
+    public final void auditIsNotZero(Number number) {
+        if (!Constraint.isNotZero(number)) {
+            throw new FATConstraintViolation();
+        }
     }
     
     /* (non-Javadoc)
      * @see com.javanut.purefat.PFImpl#auditIsPositive(java.lang.Number, java.lang.String)
      */
     @Override
-    public final void auditIsPositive(Number number,String label) {
-        Constraint.isPositive(number,label);
+    public final void auditIsPositive(Number number) {
+        if (!Constraint.isPositive(number)) {
+            throw new FATConstraintViolation();
+        }
     }
     
     /* (non-Javadoc)
      * @see com.javanut.purefat.PFImpl#logAuditTrail(java.lang.Number, com.javanut.purefat.FATFormat)
      */
     @Override
-    public final void logAuditTrail(Number keyNumber, FATReport format) {
+    public final void logAuditTrail(Number keyNumber, FATTemplate format) {
         format.log(logger, auditTrail, keyNumber, Thread.currentThread().getStackTrace());
     }
     
@@ -106,179 +115,72 @@ public class PFVerbose implements PFImpl {
      * @see com.javanut.purefat.PFImpl#audit(double, java.lang.String)
      */
     @Override
-    public final Double audit(double value, String label) {
-        Double boxed = new Double(value);
-        auditTrail.save(boxed,label,LABEL_WRAP, boxed);
-        return boxed;
-    }
-
-    /* (non-Javadoc)
-     * @see com.javanut.purefat.PFImpl#audit(int, java.lang.String)
-     */
-    @Override
-    public final Integer audit(int value, String label) {
-        Integer boxed = new Integer(value);
-        auditTrail.save(boxed,label,LABEL_WRAP, boxed);
-        return boxed;
+    public final void audit(Number value, String label) {
+        auditTrail.save(value,label,LABEL_WRAP, value);
     }
 
     /* (non-Javadoc)
      * @see com.javanut.purefat.PFImpl#audit(double, java.lang.String, java.lang.String, java.lang.Number)
      */
     @Override
-    public final Double audit(double value, String label, String expressionText, Number p1) {
-        Double boxed = new Double(value);
-        auditTrail.save(boxed,label,expressionText, p1);
-        return boxed;
+    public final void audit(Number value, String label, String expressionText, Number p1) {
+        auditTrail.save(value,label,expressionText, p1);
     }
 
     /* (non-Javadoc)
      * @see com.javanut.purefat.PFImpl#audit(double, java.lang.String, java.lang.String, java.lang.Number, java.lang.Number)
      */
     @Override
-    public final Double audit(double value, String label, String expressionText, Number p1, Number p2) {
-        Double boxed = new Double(value);
-        auditTrail.save(boxed,label,expressionText, p1, p2);
-        return boxed;
+    public final void audit(Number value, String label, String expressionText, Number p1, Number p2) {
+        auditTrail.save(value,label,expressionText, p1, p2);
     }
 
     /* (non-Javadoc)
      * @see com.javanut.purefat.PFImpl#audit(double, java.lang.String, java.lang.String, java.lang.Number, java.lang.Number, java.lang.Number)
      */
     @Override
-    public final Double audit(double value, String label, String expressionText, Number p1, Number p2, Number p3) {
-        Double boxed = new Double(value);
-        auditTrail.save(boxed,label,expressionText, p1, p2, p3);
-        return boxed;
+    public final void audit(Number value, String label, String expressionText, Number p1, Number p2, Number p3) {
+        auditTrail.save(value,label,expressionText, p1, p2, p3);
     }
 
     /* (non-Javadoc)
      * @see com.javanut.purefat.PFImpl#audit(double, java.lang.String, java.lang.String, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number)
      */
     @Override
-    public final Double audit(double value, String label, String expressionText, Number p1, Number p2, Number p3, Number p4) {
-        Double boxed = new Double(value);
-        auditTrail.save(boxed,label,expressionText, p1, p2, p3, p4);
-        return boxed;
+    public final void audit(Number value, String label, String expressionText, Number p1, Number p2, Number p3, Number p4) {
+        auditTrail.save(value,label,expressionText, p1, p2, p3, p4);
     }
 
     /* (non-Javadoc)
      * @see com.javanut.purefat.PFImpl#audit(double, java.lang.String, java.lang.String, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number)
      */
     @Override
-    public final Double audit(double value, String label, String expressionText, Number p1, Number p2, Number p3, Number p4, Number p5) {
-        Double boxed = new Double(value);
-        auditTrail.save(boxed,label,expressionText, p1, p2, p3, p4, p5);
-        return boxed;
+    public final void audit(Number value, String label, String expressionText, Number p1, Number p2, Number p3, Number p4, Number p5) {
+        auditTrail.save(value,label,expressionText, p1, p2, p3, p4, p5);
     }
 
     /* (non-Javadoc)
      * @see com.javanut.purefat.PFImpl#audit(double, java.lang.String, java.lang.String, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number)
      */
     @Override
-    public final Double audit(double value, String label, String expressionText, Number p1, Number p2, Number p3, Number p4, Number p5, Number p6) {
-        Double boxed = new Double(value);
-        auditTrail.save(boxed,label,expressionText, p1, p2, p3, p4, p5, p6);
-        return boxed;
+    public final void audit(Number value, String label, String expressionText, Number p1, Number p2, Number p3, Number p4, Number p5, Number p6) {
+        auditTrail.save(value,label,expressionText, p1, p2, p3, p4, p5, p6);
     }
 
     /* (non-Javadoc)
      * @see com.javanut.purefat.PFImpl#audit(double, java.lang.String, java.lang.String, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number)
      */
     @Override
-    public final Double audit(double value, String label, String expressionText, Number p1, Number p2, Number p3, Number p4, Number p5, Number p6, Number p7) {
-        Double boxed = new Double(value);
-        auditTrail.save(boxed,label,expressionText, p1, p2, p3, p4, p5, p6, p7);
-        return boxed;
+    public final void audit(Number value, String label, String expressionText, Number p1, Number p2, Number p3, Number p4, Number p5, Number p6, Number p7) {
+        auditTrail.save(value,label,expressionText, p1, p2, p3, p4, p5, p6, p7);
     }
     
     /* (non-Javadoc)
      * @see com.javanut.purefat.PFImpl#audit(double, java.lang.String, java.lang.String, java.lang.Number[])
      */
     @Override
-    public final Double audit(double value, String label, String expressionText, Number[] params) {
-        Double boxed = new Double(value);
-        auditTrail.save(boxed,label,expressionText, params);
-        return boxed;
+    public final void audit(Number value, String label, String expressionText, Number[] params) {
+        auditTrail.save(value,label,expressionText, params);
     }
     
-    /* (non-Javadoc)
-     * @see com.javanut.purefat.PFImpl#audit(int, java.lang.String, java.lang.String, java.lang.Number)
-     */
-    @Override
-    public final Integer audit(int value, String label, String expressionText, Number p1) {
-        Integer boxed = new Integer(value);
-        auditTrail.save(boxed,label,expressionText, p1);
-        return boxed;
-    }
-
-    /* (non-Javadoc)
-     * @see com.javanut.purefat.PFImpl#audit(int, java.lang.String, java.lang.String, java.lang.Number, java.lang.Number)
-     */
-    @Override
-    public final Integer audit(int value, String label, String expressionText, Number p1, Number p2) {
-        Integer boxed = new Integer(value);
-        auditTrail.save(boxed,label,expressionText, p1, p2);
-        return boxed;
-    }
-
-    /* (non-Javadoc)
-     * @see com.javanut.purefat.PFImpl#audit(int, java.lang.String, java.lang.String, java.lang.Number, java.lang.Number, java.lang.Number)
-     */
-    @Override
-    public final Integer audit(int value, String label, String expressionText, Number p1, Number p2, Number p3) {
-        Integer boxed = new Integer(value);
-        auditTrail.save(boxed,label,expressionText, p1, p2, p3);
-        return boxed;
-    }
-
-    /* (non-Javadoc)
-     * @see com.javanut.purefat.PFImpl#audit(int, java.lang.String, java.lang.String, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number)
-     */
-    @Override
-    public final Integer audit(int value, String label, String expressionText, Number p1, Number p2, Number p3, Number p4) {
-        Integer boxed = new Integer(value);
-        auditTrail.save(boxed,label,expressionText, p1, p2, p3, p4);
-        return boxed;
-    }
-
-    /* (non-Javadoc)
-     * @see com.javanut.purefat.PFImpl#audit(int, java.lang.String, java.lang.String, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number)
-     */
-    @Override
-    public final Integer audit(int value, String label, String expressionText, Number p1, Number p2, Number p3, Number p4, Number p5) {
-        Integer boxed = new Integer(value);
-        auditTrail.save(boxed,label,expressionText, p1, p2, p3, p4, p5);
-        return boxed;
-    }
-
-    /* (non-Javadoc)
-     * @see com.javanut.purefat.PFImpl#audit(int, java.lang.String, java.lang.String, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number)
-     */
-    @Override
-    public final Integer audit(int value, String label, String expressionText, Number p1, Number p2, Number p3, Number p4, Number p5, Number p6) {
-        Integer boxed = new Integer(value);
-        auditTrail.save(boxed,label,expressionText, p1, p2, p3, p4, p5, p6);
-        return boxed;
-    }
-
-    /* (non-Javadoc)
-     * @see com.javanut.purefat.PFImpl#audit(int, java.lang.String, java.lang.String, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number)
-     */
-    @Override
-    public final Integer audit(int value, String label, String expressionText, Number p1, Number p2, Number p3, Number p4, Number p5, Number p6, Number p7) {
-        Integer boxed = new Integer(value);
-        auditTrail.save(boxed,label,expressionText, p1, p2, p3, p4, p5, p6, p7);
-        return boxed;
-    }
-    
-    /* (non-Javadoc)
-     * @see com.javanut.purefat.PFImpl#audit(int, java.lang.String, java.lang.String, java.lang.Number[])
-     */
-    @Override
-    public final Integer audit(int value, String label, String expressionText, Number[] params) {
-        Integer boxed = new Integer(value);
-        auditTrail.save(boxed,label,expressionText, params);
-        return boxed;
-    }
 }
