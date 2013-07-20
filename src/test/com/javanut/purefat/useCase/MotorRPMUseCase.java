@@ -74,7 +74,13 @@ public class MotorRPMUseCase implements ExampleUseCase {
                 }
                 //in this example 1 is white and 0 is black
                 //this makes 128 (1 or 0) in a row before switching.
-                return audit(((samplesCount-countRemaining)>>7)%2,"shaftSample");
+                Integer result = audit(((samplesCount-countRemaining)>>7)%2,"shaftSample");
+                
+//                continueAuditTo("RawData", result);
+//                //TODO: need lookup to work with this? put in another test!
+//                Integer newResult = continueAuditFrom("RawData", result.intValue());
+                
+                return result;
             }
 
             @Override
@@ -112,7 +118,7 @@ public class MotorRPMUseCase implements ExampleUseCase {
     public void validatResult(Number result) {
 
         //these are disasters causing a throw.
-        auditIsFinite(result); 
+        auditIsFinite(result);
         auditIsGTE(result, 0);
         
         //these checks are just for quality and get logged.

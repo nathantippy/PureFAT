@@ -34,6 +34,8 @@ package com.javanut.purefat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.qos.logback.classic.Level;
+
 import com.javanut.purefat.impl.DualAuditTrail;
 import com.javanut.purefat.impl.FunctionAuditTrail;
 import com.javanut.purefat.impl.PFDefault;
@@ -57,15 +59,19 @@ public class PureFAT {
     //System property to select verbose logging of errors without assertions
     private final static String PUREFAT_VERBOSE_KEY = "purefat.verbose";
     
+ //   static final ch.qos.logback.classic.Logger logger = 
+ //           (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(PureFAT.class);
     
     //package protected because this is the logger used for writing all the 
     //expressions. Writing expressions externally requires debug level.
     static final Logger logger = LoggerFactory.getLogger(PureFAT.class);
     private static final PFImpl pf = chooseImpl();
-    public static boolean isDebugEnabled = logger.isDebugEnabled();
     
-
+    
+   // public static boolean isDebugEnabled = logger.isDebugEnabled();
+    
     private static PFImpl chooseImpl() {
+
         
         ///////////////
         //do nothing
@@ -159,6 +165,11 @@ public class PureFAT {
 
     public static final Integer audit(int value, String label) {
         Integer boxed = new Integer(value);
+        pf.audit(boxed, label);
+        return boxed;
+    }
+
+    public static final <T extends Number> T audit(T boxed, String label) {
         pf.audit(boxed, label);
         return boxed;
     }
@@ -259,6 +270,63 @@ public class PureFAT {
         return boxed;
     }
     
-    //TODO: add Number for each of these
+    public static final <T extends Number> T auditNumber(T boxed, String label, String expressionText, Number p1) {
+        pf.audit(boxed, label, expressionText, p1);
+        return boxed;
+    }
+
+    public static final <T extends Number> T auditNumber(T boxed, String label, String expressionText, Number p1, Number p2) {
+        pf.audit(boxed, label, expressionText, p1, p2);
+        return boxed;
+    }
+
+    public static final <T extends Number> T auditNumber(T boxed, String label, String expressionText, Number p1, Number p2, Number p3) {
+        pf.audit(boxed, label, expressionText, p1, p2, p3);
+        return boxed;
+    }
+
+    public static final <T extends Number> T auditNumber(T boxed, String label, String expressionText, Number p1, Number p2, Number p3, Number p4) {
+        pf.audit(boxed, label, expressionText, p1, p2, p3, p4);
+        return boxed;
+    }
+
+    public static final <T extends Number> T auditNumber(T boxed, String label, String expressionText, Number p1, Number p2, Number p3, Number p4, Number p5) {
+        pf.audit(boxed, label, expressionText, p1, p2 ,p3, p4, p5);
+        return boxed;
+    }
+
+    public static final <T extends Number> T auditNumber(T boxed, String label, String expressionText, Number p1, Number p2, Number p3, Number p4, Number p5, Number p6) {
+        pf.audit(boxed, label, expressionText, p1, p2, p3, p4, p5, p6);
+        return boxed;
+    }
+
+    public static final <T extends Number> T auditNumber(T boxed, String label, String expressionText, Number p1, Number p2, Number p3, Number p4, Number p5, Number p6, Number p7) {
+        pf.audit(boxed, label, expressionText, p1, p2, p3, p4, p5, p6, p7);
+        return boxed;
+    }
+    
+    public static final <T extends Number> T auditNumber(T boxed, String label, String expressionText, Number[] params) {
+        pf.audit(boxed, label, expressionText, params);
+        return boxed;
+    }
+    
+    
+    public static final void continueAuditTo(String channelId, Number boxed) {
+        pf.continueAuditTo(channelId,boxed);
+    }
+    public static final Double continueAuditFrom(String channelId, double value) {
+        Double boxed = new Double(value);
+        pf.continueAuditFrom(channelId, boxed);
+        return boxed;
+    }
+    public static final Integer continueAuditFrom(String channelId, int value) {
+        Integer boxed = new Integer(value);
+        pf.continueAuditFrom(channelId, boxed);
+        return boxed;
+    }
+    public static final Number continueAuditNumberFrom(String channelId, Number boxed) {
+        pf.continueAuditFrom(channelId, boxed);
+        return boxed;
+    }
     
 }

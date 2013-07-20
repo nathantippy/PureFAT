@@ -41,6 +41,7 @@ import static com.javanut.purefat.PureFAT.*;
 public class Constraint {
 
     private static final Logger logger = LoggerFactory.getLogger(Constraint.class);
+    private static final double TWO_PI = Math.PI*2d;
     
     private Constraint() {
     }
@@ -108,6 +109,28 @@ public class Constraint {
     
     final static boolean isPositive(Number number) {
         if (null==number || number.doubleValue()<0 || Double.isNaN(number.doubleValue()) || Double.isInfinite(number.doubleValue())) {
+            logAuditTrail(number,FATTemplate.table);
+            return false;
+        }
+        return true;
+    }
+
+    /*
+     * Must be between + or - pi
+     */
+    public static boolean isTightRadian(Number number) {
+        if (null==number || Double.isNaN(number.doubleValue()) || number.doubleValue()+Math.PI<0 || number.doubleValue()-Math.PI>0) {
+            logAuditTrail(number,FATTemplate.table);
+            return false;
+        }
+        return true;
+    }
+
+    /*
+     * Must be between 0 or 2pi
+     */
+    public static boolean isPositiveRadian(Number number) {
+        if (null==number || Double.isNaN(number.doubleValue()) || number.doubleValue()<0 || number.doubleValue()-TWO_PI>0) {
             logAuditTrail(number,FATTemplate.table);
             return false;
         }

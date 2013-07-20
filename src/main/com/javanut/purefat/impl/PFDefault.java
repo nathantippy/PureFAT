@@ -54,6 +54,22 @@ public class PFDefault implements PFImpl {
     }
 
     /* (non-Javadoc)
+     * @see com.javanut.purefat.PFImpl#auditIsTightRadian(java.lang.Number)
+     */
+    @Override
+    public void auditIsTightRadian(Number number) {
+        assert(Constraint.isTightRadian(number));
+    }
+
+    /* (non-Javadoc)
+     * @see com.javanut.purefat.PFImpl#auditIsPositiveRadian(java.lang.Number)
+     */
+    @Override
+    public void auditIsPositiveRadian(Number number) {
+        assert(Constraint.isPositiveRadian(number));
+    }
+    
+    /* (non-Javadoc)
      * @see com.javanut.purefat.PFImpl#auditIsFinite(java.lang.Number)
      */
     @Override
@@ -196,5 +212,16 @@ public class PFDefault implements PFImpl {
     public final void audit(Number value, String label, String expressionText, Number[] params) {
         assert(auditTrail.save(value,label,expressionText, params));
     }
+
+    @Override
+    public void continueAuditTo(String channelId, Number boxed) {
+        assert(auditTrail.continueAuditTo(channelId,boxed));
+    }
+
+    @Override
+    public void continueAuditFrom(String channelId, Number boxed) {
+        assert(auditTrail.continueAuditFrom(channelId,boxed));
+    }
+
     
 }

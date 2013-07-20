@@ -54,12 +54,32 @@ public class PFVerbose implements PFImpl {
     }
     
     /* (non-Javadoc)
+     * @see com.javanut.purefat.PFImpl#auditIsTightRadian(java.lang.Number)
+     */
+    @Override
+    public void auditIsTightRadian(Number number) {
+        if (!Constraint.isTightRadian(number)) {
+            throw new FATConstraintViolation("not between +/- pi");
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see com.javanut.purefat.PFImpl#auditIsPositiveRadian(java.lang.Number)
+     */
+    @Override
+    public void auditIsPositiveRadian(Number number) {
+        if (!Constraint.isPositiveRadian(number)) {
+            throw new FATConstraintViolation("not between 0 and 2pi");
+        }
+    }
+    
+    /* (non-Javadoc)
      * @see com.javanut.purefat.PFImpl#auditIsFinite(java.lang.Number)
      */
     @Override
     public final void auditIsFinite(Number number) {
         if (!Constraint.isFinite(number)) {
-            throw new FATConstraintViolation(); 
+            throw new FATConstraintViolation("not finite"); 
         }
     }
 
@@ -68,9 +88,9 @@ public class PFVerbose implements PFImpl {
      * @see com.javanut.purefat.PFImpl#auditIsGT(java.lang.Number, java.lang.Number)
      */
     @Override
-    public final void auditIsGT(Number number,Number lt) {
-        if (!Constraint.isGT(number,lt)) {
-            throw new FATConstraintViolation();
+    public final void auditIsGT(Number number,Number gt) {
+        if (!Constraint.isGT(number,gt)) {
+            throw new FATConstraintViolation("not greater than "+gt);
         }
     }
     
@@ -78,9 +98,9 @@ public class PFVerbose implements PFImpl {
      * @see com.javanut.purefat.PFImpl#auditIsGTE(java.lang.Number, java.lang.Number)
      */
     @Override
-    public final void auditIsGTE(Number number,Number lt) {
-        if (!Constraint.isGTE(number,lt)) {
-            throw new FATConstraintViolation();
+    public final void auditIsGTE(Number number,Number gte) {
+        if (!Constraint.isGTE(number,gte)) {
+            throw new FATConstraintViolation("not greater than or equal "+gte);
         }
     }
     
@@ -90,7 +110,7 @@ public class PFVerbose implements PFImpl {
     @Override
     public final void auditIsLT(Number number,Number lt) {
         if (!Constraint.isLT(number,lt)) {
-            throw new FATConstraintViolation();
+            throw new FATConstraintViolation("not less than "+lt);
         }
     }
     
@@ -100,7 +120,7 @@ public class PFVerbose implements PFImpl {
     @Override
     public final void auditIsLTE(Number number,Number lte) {
         if (!Constraint.isLTE(number, lte)) {
-            throw new FATConstraintViolation();
+            throw new FATConstraintViolation("not less than or equal "+lte);
         }
     }
     
@@ -110,7 +130,7 @@ public class PFVerbose implements PFImpl {
     @Override
     public final void auditIsNear(Number number, Number near, double epsilon) {
         if (!Constraint.isNear(number, near, epsilon)) {
-            throw new FATConstraintViolation();
+            throw new FATConstraintViolation("not within "+epsilon+" of "+near);
         }
     }
 
@@ -120,7 +140,7 @@ public class PFVerbose implements PFImpl {
     @Override
     public final void auditIsNotZero(Number number) {
         if (!Constraint.isNotZero(number)) {
-            throw new FATConstraintViolation();
+            throw new FATConstraintViolation("is zero");
         }
     }
     
@@ -130,7 +150,7 @@ public class PFVerbose implements PFImpl {
     @Override
     public final void auditIsPositive(Number number) {
         if (!Constraint.isPositive(number)) {
-            throw new FATConstraintViolation();
+            throw new FATConstraintViolation("not positive");
         }
     }
     
@@ -212,6 +232,16 @@ public class PFVerbose implements PFImpl {
     @Override
     public final void audit(Number value, String label, String expressionText, Number[] params) {
         auditTrail.save(value,label,expressionText, params);
+    }
+
+    @Override
+    public void continueAuditTo(String channelId, Number boxed) {
+        auditTrail.continueAuditTo(channelId, boxed);
+    }
+
+    @Override
+    public void continueAuditFrom(String channelId, Number boxed) {
+        auditTrail.continueAuditFrom(channelId, boxed);
     }
     
 }

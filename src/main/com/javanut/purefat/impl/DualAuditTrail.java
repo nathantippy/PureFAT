@@ -112,4 +112,18 @@ public class DualAuditTrail implements FunctionAuditTrail {
                 secondary.save(number, label, expression, params);
     }
 
+    @Override
+    public boolean continueAuditTo(String channelId, Number boxed) {
+        primary.continueAuditTo(channelId, boxed);
+        secondary.continueAuditTo(channelId, boxed);
+        return true;
+    }
+
+    @Override
+    public boolean continueAuditFrom(String channelId, Number boxed) {
+        primary.continueAuditFrom(channelId, boxed);
+        secondary.continueAuditFrom(channelId, boxed);
+        return true;
+    }
+
 }

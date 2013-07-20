@@ -57,6 +57,7 @@ public class SpeedComparisons {
         System.setProperty("purefat.internal", "true");
         //Do not use assertions, it makes testing inconsistent.
         System.setProperty("purefat.verbose", "true");
+        
     }
     
 

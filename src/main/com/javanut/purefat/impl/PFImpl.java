@@ -40,8 +40,9 @@ public interface PFImpl {
 
     void flush(Number number);
 
-    //TODO:  auditIsTightRadian()  +- pi only
-    //TODO:  auditIsPositiveRadian() 0 to 2PI    
+    void auditIsTightRadian(Number number); // only +- pi 
+    
+    void auditIsPositiveRadian(Number number); // 0 to 2pi
 
     void auditIsFinite(Number number);
 
@@ -87,7 +88,9 @@ public interface PFImpl {
 
     void audit(Number value, String label, String expressionText,
             Number[] params);
-    
 
+    void continueAuditTo(String channelId, Number boxed);
+
+    void continueAuditFrom(String channelId, Number boxed);
 
 }

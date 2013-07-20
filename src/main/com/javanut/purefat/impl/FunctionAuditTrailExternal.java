@@ -31,6 +31,10 @@
  */
 package com.javanut.purefat.impl;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
@@ -40,6 +44,9 @@ public class FunctionAuditTrailExternal implements FunctionAuditTrail {
 
     
     private final Logger pureFATLogger;
+    
+    private final Map<String,AtomicInteger> channelToCount = new HashMap<String,AtomicInteger>();
+    private final Map<String,AtomicInteger> channelFromCount = new HashMap<String,AtomicInteger>();
     
     public FunctionAuditTrailExternal(Logger logger) {
         pureFATLogger = logger;
@@ -98,51 +105,124 @@ public class FunctionAuditTrailExternal implements FunctionAuditTrail {
     @Override
     public boolean save(Number number, String label, String expression,
                         Number[] params) {
-        
-        StringBuilder sb = new StringBuilder(100);
-        
-        Marker marker = marker(label,expression);
-        
-        String id = wrapId(number);
-        Marker idMarker = MarkerFactory.getMarker(id);
-        marker.add(idMarker);
-        
-        String machineId = Util.instanceId();
-        marker.add(MarkerFactory.getMarker(machineId));
-        
-        sb.append(id);
-        wrapExpr(number, expression, sb);
-        
-        String[] pIdArray = new String[params.length];
-        int i = 0;
-        while (i<params.length) {
-            String pId = wrapId(params[i]);
-            pIdArray[i] = pId;
-            Marker pIdMarker = MarkerFactory.getMarker(pId);
-            idMarker.add(pIdMarker);
+        if (pureFATLogger.isTraceEnabled()) {
+            StringBuilder sb = new StringBuilder(100);
+            sb.append("${").append(label).append("} ");
+            
+            Marker marker = marker(label,expression);
+            
+            String id = wrapId(number);
+            Marker idMarker = MarkerFactory.getMarker(id);
+            marker.add(idMarker);
+            
+            String machineId = Util.instanceId();
+            marker.add(MarkerFactory.getMarker(machineId));
+            
+            sb.append(id);
+            wrapExpr(number, expression, sb);
+            
+            String[] pIdArray = new String[params.length];
+            int i = 0;
+            while (i<params.length) {
+                //don't add extra id if this is only a label.
+                String pId = (expression==PFImpl.LABEL_WRAP ? "" : wrapId(params[i]));
+                pIdArray[i] = pId+params[i];
+                
+                Marker pIdMarker = MarkerFactory.getMarker(pId);
+                idMarker.add(pIdMarker);
+                i++;
+            }
+            sb.append(" ");
+            
+            
+            FunMetaData funMetaData = new FunMetaData(Thread.currentThread().getStackTrace());
+            sb.append(funMetaData.stackElement());
+            
+            pureFATLogger.trace(marker, sb.toString(),  pIdArray);
+
         }
-        sb.append(" ");
-        sb.append(MessageFormatter.arrayFormat(expression, pIdArray));
-        
-        pureFATLogger.debug(marker, sb.toString(),  params);
-        
         return true;
     }
     
     
     private final void wrapExpr(Number number, String expression, StringBuilder sb) {
-        sb.append(number).append('=').append(expression).append(' ');
+        sb.append(number).append(" = ").append(expression).append(' ');
     }
 
     private final String wrapId(Number number) {
-        return "[PF"+Long.toHexString(System.identityHashCode(number))+']';
+        return "[F"+Long.toHexString(System.identityHashCode(number)).toUpperCase()+"N]";
     }
 
     private Marker marker(String label, String expression) {
         return MarkerFactory.getMarker(label+':'+expression);
     }
 
+    @Override
+    public boolean continueAuditTo(String channelId, Number boxed) {
+        if (pureFATLogger.isTraceEnabled()) {
+            validate(channelId);
+            
+            AtomicInteger count;
+            synchronized(channelToCount) {
+                count = channelToCount.get(channelId);
+                if (null == count) {
+                    count = new AtomicInteger();
+                    channelToCount.put(channelId, count);
+                }
+            }
+            
+            FunMetaData funMetaData = new FunMetaData(Thread.currentThread().getStackTrace());
+            String value = wrapId(boxed)+boxed;
+            synchronized(count) {
+                //channel<<<[xxxx]boxed line number
+                pureFATLogger.trace(channelId+'.'+count.incrementAndGet()+"<<<"+value+" "+funMetaData.stackElement());
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public boolean continueAuditFrom(String channelId, Number boxed) {
+        if (pureFATLogger.isTraceEnabled()) {
+            validate(channelId);
+            
+            AtomicInteger count;
+            synchronized(channelFromCount) {
+                count = channelFromCount.get(channelId);
+                if (null == count) {
+                    count = new AtomicInteger();
+                    channelFromCount.put(channelId, count);
+                }
+            }
+
+            FunMetaData funMetaData = new FunMetaData(Thread.currentThread().getStackTrace());
+            String value = wrapId(boxed)+boxed;
+            //write to log in the same order we counted them.
+            synchronized(count) {
+                //[xxxx]boxed<<<channel
+                pureFATLogger.debug(value + "<<<" + channelId + '.' + count.incrementAndGet() + " " + funMetaData.stackElement());
+            }
+        }
+        return true;
+    }
     
+    private void validate(String channelId) {
+        int i = channelId.length();
+        while(--i>=0) {
+            switch (channelId.charAt(i)) {
+                case ' ':
+                case '<':
+                case '>':
+                case '.':
+                case '\n':
+                case '\r':
+                    throw new UnsupportedOperationException("Channel name must not contain '"+channelId.charAt(i)+"'");
+                default:
+                    //ok
+            }
+        }
+    }
+
     @Override
     public Function get(Number key) {
         // TODO: query logback by this key?

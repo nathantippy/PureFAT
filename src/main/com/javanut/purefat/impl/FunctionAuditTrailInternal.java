@@ -346,4 +346,17 @@ public class FunctionAuditTrailInternal implements FunctionAuditTrail  {
         }
     }
 
+    @Override
+    public boolean continueAuditTo(String channelId, Number boxed) {
+        // not sure this implementation can use this for anything
+        return true;
+    }
+
+    @Override
+    public boolean continueAuditFrom(String channelId, Number boxed) {
+        // not sure this implementation can use this for anything
+        //TODO:add special label?
+        return true;
+    }
+
 }

@@ -47,6 +47,19 @@ public class PFNone implements PFImpl {
     public final void flush(Number number) {
     }
 
+    /* (non-Javadoc)
+     * @see com.javanut.purefat.PFImpl#auditIsTightRadian(java.lang.Number)
+     */
+    @Override
+    public final void auditIsTightRadian(Number number) {
+    }
+
+    /* (non-Javadoc)
+     * @see com.javanut.purefat.PFImpl#auditIsPositiveRadian(java.lang.Number)
+     */
+    @Override
+    public final void auditIsPositiveRadian(Number number) {
+    }
     
     /* (non-Javadoc)
      * @see com.javanut.purefat.PFImpl#auditIsFinite(java.lang.Number)
@@ -172,6 +185,14 @@ public class PFNone implements PFImpl {
      */
     @Override
     public final void audit(Number value, String label, String expressionText, Number[] params) {
+    }
+
+    @Override
+    public void continueAuditTo(String channelId, Number boxed) {
+    }
+
+    @Override
+    public void continueAuditFrom(String channelId, Number boxed) {
     }
     
 }

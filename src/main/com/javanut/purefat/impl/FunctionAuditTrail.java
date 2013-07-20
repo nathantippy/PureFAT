@@ -67,4 +67,8 @@ public interface FunctionAuditTrail {
     public boolean save(Number number, String label, String expression,
             Number[] params);
 
+    public boolean continueAuditTo(String channelId, Number boxed);
+
+    public boolean continueAuditFrom(String channelId, Number boxed);
+
 }

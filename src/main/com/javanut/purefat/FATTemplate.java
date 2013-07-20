@@ -51,7 +51,7 @@ import com.javanut.purefat.impl.Util;
 import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
 
 public enum FATTemplate {
-    table { // TODO: detailed table?
+    table {
 
         @Override
         public boolean log(Logger logger,
@@ -67,11 +67,6 @@ public enum FATTemplate {
                 FunctionAuditTrail functionAuditTrail,
                 LinkedHashMap<Number, Function> table) {
             StringBuilder builder = new StringBuilder();
-            builder.append("\n");
-
-            // TODO: remove label in checks
-            // TODO: check the other reports.
-            // TODO: can idenical call be rolled up?
 
             // <Value> = <Expression> <StackElement> <LabelInterpolated>
             List<String> columnValue = new ArrayList<String>();
@@ -117,6 +112,7 @@ public enum FATTemplate {
             int i = 0;
             while (i < columnValue.size()) {
 
+                builder.append("\n  ");
                 leftJustify(builder, columnWidth, columnValue.get(i));
                 builder.append(EQUALS_SYMBOL);
                 leftJustify(builder, columnExpressionWidth,
@@ -127,7 +123,6 @@ public enum FATTemplate {
                 builder.append(SPACE);
                 leftJustify(builder, columnLabelInterpolatedWidth,
                         columnLabelInterpolated.get(i));
-                builder.append("\n");
                 i++;
             }
 
@@ -206,7 +201,6 @@ public enum FATTemplate {
                 FunctionAuditTrail functionAuditTrail,
                 LinkedHashMap<Number, Function> table) {
             StringBuilder builder = new StringBuilder();
-            builder.append("\n");
 
             // <StackElement> <CallCount> <LabelExpression>
 
@@ -269,6 +263,7 @@ public enum FATTemplate {
             int i = 0;
             while (i < columnStackElement.size()) {
 
+                builder.append("\n  ");
                 leftJustify(builder, columnStackElementWidth,
                         columnStackElement.get(i));
                 builder.append(SPACE);
@@ -284,7 +279,6 @@ public enum FATTemplate {
                     builder.append(columnFunction.get(i).toString());
                 }
                 
-                builder.append("\n");
                 i++;
             }
 

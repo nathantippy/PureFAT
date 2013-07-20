@@ -33,10 +33,10 @@ package com.javanut.purefat;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static com.javanut.purefat.PureFAT.*;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutionException;
@@ -45,19 +45,28 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import ch.qos.logback.classic.Level;
 
 import com.javanut.purefat.impl.FATConstraintViolation;
 import com.javanut.purefat.useCase.ExampleUseCase;
 import com.javanut.purefat.useCase.MotorRPMUseCase;
-//TODO: add author tag to all pages.
+
 public class ExampleUsages {
 
     static {
-        //This block is already set so the other test prevents this from working!!
-        System.setProperty("purefat.internal", "true");
+        //Only use internal logging to speed up test.
+//     (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(PureFAT.class).setLevel(Level.TRACE);//TODO: hack to check on logger?
+    //    System.setProperty("purefat.external", "true");
+        
         //Do not use assertions, it makes testing inconsistent.
         System.setProperty("purefat.verbose", "true");
+
     }
+    
+    static final Logger logger = LoggerFactory.getLogger(ExampleUsages.class);
     
     @Test
     public void testMotorRPM() {
@@ -117,7 +126,8 @@ public class ExampleUsages {
                         Number next = samples.next();
                         sampleQueue.put(next);
                     } catch (FATConstraintViolation cv) {
-                        cv.printStackTrace();
+                        logger.error("unexpected",cv);
+                        fail("Unexpected exception");
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                         return;
@@ -142,7 +152,8 @@ public class ExampleUsages {
                         Number result = useCase.computeResult(sample);
                         reportQueue.put(result);
                     } catch (FATConstraintViolation cv) {
-                        cv.printStackTrace();
+                        logger.error("unexpected",cv);
+                        fail("Unexpected exception");
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                         return;
@@ -159,7 +170,7 @@ public class ExampleUsages {
         return new Runnable() {
             @Override
             public void run() {
-                List<AssertionError> allErrors = new ArrayList<AssertionError>();
+                AssertionError assertionError = null;
                 int remainingCount = useCase.samplesCount();
                 int index = 0;
                 while (--remainingCount>=0) {
@@ -170,29 +181,29 @@ public class ExampleUsages {
                             assertFalse("Failure expected at index "+index,
                                         useCase.isFailureExpected(index));
                         } catch (FATConstraintViolation cv) {
+                            logger.error("isExpected:"+useCase.isFailureExpected(index), cv);
                             assertTrue("No falure expected at index "+index,
                                        useCase.isFailureExpected(index));
                             
-                            //check expected message
-                            //cv.getMessage()
-                            //cv.printStackTrace();
                         } catch (InterruptedException e) {
                             Thread.currentThread().interrupt();
                             return;
                         }
                     } catch (AssertionError ae) {
-                        allErrors.add(ae);
+                        //for thread management simplicity nothing is stopped
+                        //when an error is detected. Instead we keep it for later.
+                        if (null==assertionError) {
+                            assertionError = ae;
+                        } else {
+                            assertionError.addSuppressed(ae);
+                        }
                     }
                     index++;
                 }
-                for(AssertionError ae:allErrors) {
-                    ae.printStackTrace();
-                }
-                if (!allErrors.isEmpty()) {
-                    throw allErrors.get(0);
+                if (null!=assertionError) {
+                    throw assertionError;
                 }
             }
-            
         };
     }
 
