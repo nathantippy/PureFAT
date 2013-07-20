@@ -29,14 +29,14 @@
  * bitcoin:1NBzAoTTf1PZpYTn7WbXDTf17gddJHC8eY?amount=0.01&message=PFAT%20donation
  *
  */
-package com.javanut.purefat.useCase;
+package com.ociweb.purefat.useCase;
 
-import static com.javanut.purefat.PureFAT.*;
+import static com.ociweb.purefat.PureFAT.*;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import com.javanut.purefat.FATTemplate;
+import com.ociweb.purefat.FATTemplate;
 
 public class MotorRPMUseCase implements ExampleUseCase {
 

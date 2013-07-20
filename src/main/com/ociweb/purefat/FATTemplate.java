@@ -29,7 +29,7 @@
  * bitcoin:1NBzAoTTf1PZpYTn7WbXDTf17gddJHC8eY?amount=0.01&message=PFAT%20donation
  *
  */
-package com.javanut.purefat;
+package com.ociweb.purefat;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,10 +44,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.helpers.MessageFormatter;
 
-import com.javanut.purefat.impl.FunMetaData;
-import com.javanut.purefat.impl.Function;
-import com.javanut.purefat.impl.FunctionAuditTrail;
-import com.javanut.purefat.impl.Util;
+import com.ociweb.purefat.impl.FunMetaData;
+import com.ociweb.purefat.impl.Function;
+import com.ociweb.purefat.impl.FunctionAuditTrail;
+import com.ociweb.purefat.impl.Util;
 import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
 
 public enum FATTemplate {

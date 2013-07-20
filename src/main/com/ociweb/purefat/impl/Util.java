@@ -29,28 +29,24 @@
  * bitcoin:1NBzAoTTf1PZpYTn7WbXDTf17gddJHC8eY?amount=0.01&message=PFAT%20donation
  *
  */
-package com.javanut.purefat.impl;
+package com.ociweb.purefat.impl;
 
-public class FunMetaData {
+import java.rmi.dgc.VMID;
 
-    static FunMetaData NONE = new FunMetaData(new StackTraceElement[]{});
-    private final StackTraceElement callInfo;
-
-    FunMetaData(StackTraceElement[] stackTrace) {
-        int i = 0;
-        while (++i<stackTrace.length) {
-            if (!stackTrace[i].getClassName().contains("purefat.impl") &&
-                !stackTrace[i].getClassName().contains("purefat.PureFAT")) {
-                this.callInfo = stackTrace[i];
-                return;
-            }
-        }
-        
-        this.callInfo = new StackTraceElement("Unknown","Unknown","Unknown",0);
+public class Util {
+    
+    private final static VMID instanceId = new VMID();
+    
+    private Util(){
     }
     
-    public String stackElement() {
-        return callInfo.toString();
+    public static final String wrapId(Number number) {
+        return "[PF"+
+                Long.toHexString(System.identityHashCode(number))+
+                ']';
     }
-
+    
+    public static final String instanceId() {
+        return "["+instanceId+"]";
+    }
 }

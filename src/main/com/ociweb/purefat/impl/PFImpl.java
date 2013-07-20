@@ -29,46 +29,68 @@
  * bitcoin:1NBzAoTTf1PZpYTn7WbXDTf17gddJHC8eY?amount=0.01&message=PFAT%20donation
  *
  */
-package com.javanut.purefat.impl;
+package com.ociweb.purefat.impl;
 
+import com.ociweb.purefat.FATTemplate;
 
-public interface FunctionAuditTrail {
+public interface PFImpl {
 
-    public boolean flush(Number key);
+    final String     LABEL_WRAP = "{}";
+    final int        MAX_PARAMS = 7;
+
+    void flush(Number number);
+
+    void auditIsTightRadian(Number number); // only +- pi 
     
-    public Function get(Number key);
-    
-    public Function get(Number key, Function startHere);
-    
-    public FunMetaData metaData(Function fun);
-    
-    public boolean save(Number number, String label, String expression,
+    void auditIsPositiveRadian(Number number); // 0 to 2pi
+
+    void auditIsFinite(Number number);
+
+    void auditIsGT(Number number, Number lt);
+
+    void auditIsGTE(Number number, Number lt);
+
+    void auditIsLT(Number number, Number lt);
+
+    void auditIsLTE(Number number, Number lte);
+
+    void auditIsNear(Number number, Number near, double epsilon);
+
+    void auditIsNotZero(Number number);
+
+    void auditIsPositive(Number number);
+
+    void logAuditTrail(Number keyNumber, FATTemplate format);
+
+    void audit(Number value, String label);
+
+    void audit(Number value, String label, String expressionText,
             Number p1);
 
-    public boolean save(Number number, String label, String expression,
+    void audit(Number value, String label, String expressionText,
             Number p1, Number p2);
 
-    public boolean save(Number number, String label, String expression,
+    void audit(Number value, String label, String expressionText,
             Number p1, Number p2, Number p3);
 
-    public boolean save(Number number, String label, String expression,
+    void audit(Number value, String label, String expressionText,
             Number p1, Number p2, Number p3, Number p4);
 
-    public boolean save(Number number, String label, String expression,
+    void audit(Number value, String label, String expressionText,
             Number p1, Number p2, Number p3, Number p4, Number p5);
 
-    public boolean save(Number number, String label, String expression,
+    void audit(Number value, String label, String expressionText,
             Number p1, Number p2, Number p3, Number p4, Number p5, Number p6);
 
-    public boolean save(Number number, String label, String expression,
+    void audit(Number value, String label, String expressionText,
             Number p1, Number p2, Number p3, Number p4, Number p5, Number p6,
             Number p7);
 
-    public boolean save(Number number, String label, String expression,
+    void audit(Number value, String label, String expressionText,
             Number[] params);
 
-    public boolean continueAuditTo(String channelId, Number boxed);
+    void continueAuditTo(String channelId, Number boxed);
 
-    public boolean continueAuditFrom(String channelId, Number boxed);
+    void continueAuditFrom(String channelId, Number boxed);
 
 }

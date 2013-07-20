@@ -29,12 +29,12 @@
  * bitcoin:1NBzAoTTf1PZpYTn7WbXDTf17gddJHC8eY?amount=0.01&message=PFAT%20donation
  *
  */
-package com.javanut.purefat;
+package com.ociweb.purefat;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static com.javanut.purefat.PureFAT.*;
+import static com.ociweb.purefat.PureFAT.*;
 
 import java.util.Iterator;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -50,9 +50,9 @@ import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.classic.Level;
 
-import com.javanut.purefat.impl.FATConstraintViolation;
-import com.javanut.purefat.useCase.ExampleUseCase;
-import com.javanut.purefat.useCase.MotorRPMUseCase;
+import com.ociweb.purefat.impl.FATConstraintViolation;
+import com.ociweb.purefat.useCase.ExampleUseCase;
+import com.ociweb.purefat.useCase.MotorRPMUseCase;
 
 public class ExampleUsages {
 

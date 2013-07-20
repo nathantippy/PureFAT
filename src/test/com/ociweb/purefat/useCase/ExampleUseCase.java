@@ -29,24 +29,20 @@
  * bitcoin:1NBzAoTTf1PZpYTn7WbXDTf17gddJHC8eY?amount=0.01&message=PFAT%20donation
  *
  */
-package com.javanut.purefat.impl;
+package com.ociweb.purefat.useCase;
 
-import java.rmi.dgc.VMID;
+import java.util.Iterator;
 
-public class Util {
+public interface ExampleUseCase {
+
+    Iterator<Number> samples();
+
+    int samplesCount();
+
+    Number computeResult(Number sample);
+
+    void validatResult(Number result);
     
-    private final static VMID instanceId = new VMID();
-    
-    private Util(){
-    }
-    
-    public static final String wrapId(Number number) {
-        return "[PF"+
-                Long.toHexString(System.identityHashCode(number))+
-                ']';
-    }
-    
-    public static final String instanceId() {
-        return "["+instanceId+"]";
-    }
+    boolean isFailureExpected(int index);
+
 }

@@ -29,14 +29,14 @@
  * bitcoin:1NBzAoTTf1PZpYTn7WbXDTf17gddJHC8eY?amount=0.01&message=PFAT%20donation
  *
  */
-package com.javanut.purefat.impl;
+package com.ociweb.purefat.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.javanut.purefat.FATTemplate;
+import com.ociweb.purefat.FATTemplate;
 
-import static com.javanut.purefat.PureFAT.*;
+import static com.ociweb.purefat.PureFAT.*;
 
 public class Constraint {
 

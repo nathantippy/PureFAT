@@ -29,38 +29,46 @@
  * bitcoin:1NBzAoTTf1PZpYTn7WbXDTf17gddJHC8eY?amount=0.01&message=PFAT%20donation
  *
  */
-package com.javanut.purefat;
+package com.ociweb.purefat.impl;
 
-import java.io.Serializable;
 
-public class FatNumber extends Number implements Serializable{
+public interface FunctionAuditTrail {
 
-    private final Number number;
-    private final int id;
+    public boolean flush(Number key);
     
-    public FatNumber(Number number) {
-        this.number = number;
-        this.id = System.identityHashCode(number);
-    }
+    public Function get(Number key);
     
-    @Override
-    public int intValue() {
-        return number.intValue();
-    }
+    public Function get(Number key, Function startHere);
+    
+    public FunMetaData metaData(Function fun);
+    
+    public boolean save(Number number, String label, String expression,
+            Number p1);
 
-    @Override
-    public long longValue() {
-        return number.longValue();
-    }
+    public boolean save(Number number, String label, String expression,
+            Number p1, Number p2);
 
-    @Override
-    public float floatValue() {
-        return number.floatValue();
-    }
+    public boolean save(Number number, String label, String expression,
+            Number p1, Number p2, Number p3);
 
-    @Override
-    public double doubleValue() {
-        return number.doubleValue();
-    }
+    public boolean save(Number number, String label, String expression,
+            Number p1, Number p2, Number p3, Number p4);
+
+    public boolean save(Number number, String label, String expression,
+            Number p1, Number p2, Number p3, Number p4, Number p5);
+
+    public boolean save(Number number, String label, String expression,
+            Number p1, Number p2, Number p3, Number p4, Number p5, Number p6);
+
+    public boolean save(Number number, String label, String expression,
+            Number p1, Number p2, Number p3, Number p4, Number p5, Number p6,
+            Number p7);
+
+    public boolean save(Number number, String label, String expression,
+            Number[] params);
+
+    public boolean continueAuditTo(String channelId, Number boxed);
+
+    public boolean continueAuditFrom(String channelId, Number boxed);
 
 }

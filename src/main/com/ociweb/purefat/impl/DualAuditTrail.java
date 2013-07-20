@@ -29,7 +29,7 @@
  * bitcoin:1NBzAoTTf1PZpYTn7WbXDTf17gddJHC8eY?amount=0.01&message=PFAT%20donation
  *
  */
-package com.javanut.purefat.impl;
+package com.ociweb.purefat.impl;
 
 public class DualAuditTrail implements FunctionAuditTrail {
 

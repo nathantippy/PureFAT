@@ -29,20 +29,13 @@
  * bitcoin:1NBzAoTTf1PZpYTn7WbXDTf17gddJHC8eY?amount=0.01&message=PFAT%20donation
  *
  */
-package com.javanut.purefat.useCase;
+package com.ociweb.purefat.impl;
 
-import java.util.Iterator;
 
-public interface ExampleUseCase {
+public class FATConstraintViolation extends RuntimeException {
 
-    Iterator<Number> samples();
-
-    int samplesCount();
-
-    Number computeResult(Number sample);
-
-    void validatResult(Number result);
-    
-    boolean isFailureExpected(int index);
+    public FATConstraintViolation(String message) {
+        super(message);
+    }
 
 }

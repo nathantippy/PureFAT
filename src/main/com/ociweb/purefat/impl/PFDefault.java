@@ -29,12 +29,12 @@
  * bitcoin:1NBzAoTTf1PZpYTn7WbXDTf17gddJHC8eY?amount=0.01&message=PFAT%20donation
  *
  */
-package com.javanut.purefat.impl;
+package com.ociweb.purefat.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.javanut.purefat.FATTemplate;
+import com.ociweb.purefat.FATTemplate;
 
 public class PFDefault implements PFImpl {
     
@@ -46,7 +46,7 @@ public class PFDefault implements PFImpl {
     }
     
     /* (non-Javadoc)
-     * @see com.javanut.purefat.PFImpl#dispose(java.lang.Number)
+     * @see com.ociweb.purefat.PFImpl#dispose(java.lang.Number)
      */
     @Override
     public final void flush(Number number) {
@@ -54,7 +54,7 @@ public class PFDefault implements PFImpl {
     }
 
     /* (non-Javadoc)
-     * @see com.javanut.purefat.PFImpl#auditIsTightRadian(java.lang.Number)
+     * @see com.ociweb.purefat.PFImpl#auditIsTightRadian(java.lang.Number)
      */
     @Override
     public void auditIsTightRadian(Number number) {
@@ -62,7 +62,7 @@ public class PFDefault implements PFImpl {
     }
 
     /* (non-Javadoc)
-     * @see com.javanut.purefat.PFImpl#auditIsPositiveRadian(java.lang.Number)
+     * @see com.ociweb.purefat.PFImpl#auditIsPositiveRadian(java.lang.Number)
      */
     @Override
     public void auditIsPositiveRadian(Number number) {
@@ -70,7 +70,7 @@ public class PFDefault implements PFImpl {
     }
     
     /* (non-Javadoc)
-     * @see com.javanut.purefat.PFImpl#auditIsFinite(java.lang.Number)
+     * @see com.ociweb.purefat.PFImpl#auditIsFinite(java.lang.Number)
      */
     @Override
     public final void auditIsFinite(Number number) {
@@ -78,7 +78,7 @@ public class PFDefault implements PFImpl {
     }
     
     /* (non-Javadoc)
-     * @see com.javanut.purefat.PFImpl#auditIsGT(java.lang.Number, java.lang.Number)
+     * @see com.ociweb.purefat.PFImpl#auditIsGT(java.lang.Number, java.lang.Number)
      */
     @Override
     public final void auditIsGT(Number number,Number lt) {
@@ -86,7 +86,7 @@ public class PFDefault implements PFImpl {
     }
     
     /* (non-Javadoc)
-     * @see com.javanut.purefat.PFImpl#auditIsGTE(java.lang.Number, java.lang.Number)
+     * @see com.ociweb.purefat.PFImpl#auditIsGTE(java.lang.Number, java.lang.Number)
      */
     @Override
     public final void auditIsGTE(Number number,Number lt) {
@@ -94,7 +94,7 @@ public class PFDefault implements PFImpl {
     }
     
     /* (non-Javadoc)
-     * @see com.javanut.purefat.PFImpl#auditIsLT(java.lang.Number, java.lang.Number)
+     * @see com.ociweb.purefat.PFImpl#auditIsLT(java.lang.Number, java.lang.Number)
      */
     @Override
     public final void auditIsLT(Number number,Number lt) {
@@ -102,7 +102,7 @@ public class PFDefault implements PFImpl {
     }
     
     /* (non-Javadoc)
-     * @see com.javanut.purefat.PFImpl#auditIsLTE(java.lang.Number, java.lang.Number)
+     * @see com.ociweb.purefat.PFImpl#auditIsLTE(java.lang.Number, java.lang.Number)
      */
     @Override
     public final void auditIsLTE(Number number,Number lte) {
@@ -110,7 +110,7 @@ public class PFDefault implements PFImpl {
     }
     
     /* (non-Javadoc)
-     * @see com.javanut.purefat.PFImpl#auditIsNotZero(java.lang.Number, java.lang.Number, double)
+     * @see com.ociweb.purefat.PFImpl#auditIsNotZero(java.lang.Number, java.lang.Number, double)
      */
     @Override
     public final void auditIsNear(Number number, Number near, double epsilon) {
@@ -118,7 +118,7 @@ public class PFDefault implements PFImpl {
     }
 
     /* (non-Javadoc)
-     * @see com.javanut.purefat.PFImpl#auditIsNotZero(java.lang.Number, java.lang.String)
+     * @see com.ociweb.purefat.PFImpl#auditIsNotZero(java.lang.Number, java.lang.String)
      */
     @Override
     public final void auditIsNotZero(Number number) {
@@ -126,7 +126,7 @@ public class PFDefault implements PFImpl {
     }
     
     /* (non-Javadoc)
-     * @see com.javanut.purefat.PFImpl#auditIsPositive(java.lang.Number, java.lang.String)
+     * @see com.ociweb.purefat.PFImpl#auditIsPositive(java.lang.Number, java.lang.String)
      */
     @Override
     public final void auditIsPositive(Number number) {
@@ -134,7 +134,7 @@ public class PFDefault implements PFImpl {
     }
     
     /* (non-Javadoc)
-     * @see com.javanut.purefat.PFImpl#logAuditTrail(java.lang.Number, com.javanut.purefat.FATFormat)
+     * @see com.ociweb.purefat.PFImpl#logAuditTrail(java.lang.Number, com.ociweb.purefat.FATFormat)
      */
     @Override
     public final void logAuditTrail(Number keyNumber, FATTemplate format) {
@@ -142,7 +142,7 @@ public class PFDefault implements PFImpl {
     }
     
     /* (non-Javadoc)
-     * @see com.javanut.purefat.PFImpl#audit(double, java.lang.String)
+     * @see com.ociweb.purefat.PFImpl#audit(double, java.lang.String)
      */
     @Override
     public final void audit(Number value, String label) {
@@ -150,7 +150,7 @@ public class PFDefault implements PFImpl {
     }
 
     /* (non-Javadoc)
-     * @see com.javanut.purefat.PFImpl#audit(double, java.lang.String, java.lang.String, java.lang.Number)
+     * @see com.ociweb.purefat.PFImpl#audit(double, java.lang.String, java.lang.String, java.lang.Number)
      */
     @Override
     public final void audit(Number value, String label, String expressionText, Number p1) {
@@ -158,7 +158,7 @@ public class PFDefault implements PFImpl {
     }
 
     /* (non-Javadoc)
-     * @see com.javanut.purefat.PFImpl#audit(double, java.lang.String, java.lang.String, java.lang.Number, java.lang.Number)
+     * @see com.ociweb.purefat.PFImpl#audit(double, java.lang.String, java.lang.String, java.lang.Number, java.lang.Number)
      */
     @Override
     public final void audit(Number value, String label, String expressionText, Number p1, Number p2) {
@@ -166,7 +166,7 @@ public class PFDefault implements PFImpl {
     }
 
     /* (non-Javadoc)
-     * @see com.javanut.purefat.PFImpl#audit(double, java.lang.String, java.lang.String, java.lang.Number, java.lang.Number, java.lang.Number)
+     * @see com.ociweb.purefat.PFImpl#audit(double, java.lang.String, java.lang.String, java.lang.Number, java.lang.Number, java.lang.Number)
      */
     @Override
     public final void audit(Number value, String label, String expressionText, Number p1, Number p2, Number p3) {
@@ -174,7 +174,7 @@ public class PFDefault implements PFImpl {
     }
 
     /* (non-Javadoc)
-     * @see com.javanut.purefat.PFImpl#audit(double, java.lang.String, java.lang.String, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number)
+     * @see com.ociweb.purefat.PFImpl#audit(double, java.lang.String, java.lang.String, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number)
      */
     @Override
     public final void audit(Number value, String label, String expressionText, Number p1, Number p2, Number p3, Number p4) {
@@ -182,7 +182,7 @@ public class PFDefault implements PFImpl {
     }
 
     /* (non-Javadoc)
-     * @see com.javanut.purefat.PFImpl#audit(double, java.lang.String, java.lang.String, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number)
+     * @see com.ociweb.purefat.PFImpl#audit(double, java.lang.String, java.lang.String, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number)
      */
     @Override
     public final void audit(Number value, String label, String expressionText, Number p1, Number p2, Number p3, Number p4, Number p5) {
@@ -190,7 +190,7 @@ public class PFDefault implements PFImpl {
     }
 
     /* (non-Javadoc)
-     * @see com.javanut.purefat.PFImpl#audit(double, java.lang.String, java.lang.String, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number)
+     * @see com.ociweb.purefat.PFImpl#audit(double, java.lang.String, java.lang.String, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number)
      */
     @Override
     public final void audit(Number value, String label, String expressionText, Number p1, Number p2, Number p3, Number p4, Number p5, Number p6) {
@@ -198,7 +198,7 @@ public class PFDefault implements PFImpl {
     }
 
     /* (non-Javadoc)
-     * @see com.javanut.purefat.PFImpl#audit(double, java.lang.String, java.lang.String, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number)
+     * @see com.ociweb.purefat.PFImpl#audit(double, java.lang.String, java.lang.String, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number, java.lang.Number)
      */
     @Override
     public final void audit(Number value, String label, String expressionText, Number p1, Number p2, Number p3, Number p4, Number p5, Number p6, Number p7) {
@@ -206,7 +206,7 @@ public class PFDefault implements PFImpl {
     }
     
     /* (non-Javadoc)
-     * @see com.javanut.purefat.PFImpl#audit(double, java.lang.String, java.lang.String, java.lang.Number[])
+     * @see com.ociweb.purefat.PFImpl#audit(double, java.lang.String, java.lang.String, java.lang.Number[])
      */
     @Override
     public final void audit(Number value, String label, String expressionText, Number[] params) {

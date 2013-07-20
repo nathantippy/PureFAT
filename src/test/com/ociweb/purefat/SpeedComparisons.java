@@ -29,17 +29,18 @@
  * bitcoin:1NBzAoTTf1PZpYTn7WbXDTf17gddJHC8eY?amount=0.01&message=PFAT%20donation
  *
  */
-package com.javanut.purefat;
+package com.ociweb.purefat;
 
-//import static com.javanut.purefat.PureFAT.*;
+//import static com.ociweb.purefat.PureFAT.*;
 
 
 import org.junit.Test;
 
-import com.javanut.purefat.impl.PFImpl;
-import com.javanut.purefat.impl.PFNone;
-import com.javanut.purefat.impl.PFVerbose;
-import com.javanut.purefat.impl.FunctionAuditTrailInternal;
+import com.ociweb.purefat.PureFAT;
+import com.ociweb.purefat.impl.FunctionAuditTrailInternal;
+import com.ociweb.purefat.impl.PFImpl;
+import com.ociweb.purefat.impl.PFNone;
+import com.ociweb.purefat.impl.PFVerbose;
 
 import static org.junit.Assert.*;
 
