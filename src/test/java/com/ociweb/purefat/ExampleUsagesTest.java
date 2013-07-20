@@ -54,7 +54,7 @@ import com.ociweb.purefat.impl.FATConstraintViolation;
 import com.ociweb.purefat.useCase.ExampleUseCase;
 import com.ociweb.purefat.useCase.MotorRPMUseCase;
 
-public class ExampleUsages {
+public class ExampleUsagesTest {
 
     static {
         //Only use internal logging to speed up test.
@@ -66,7 +66,7 @@ public class ExampleUsages {
 
     }
     
-    static final Logger logger = LoggerFactory.getLogger(ExampleUsages.class);
+    static final Logger logger = LoggerFactory.getLogger(ExampleUsagesTest.class);
     
     @Test
     public void testMotorRPM() {
