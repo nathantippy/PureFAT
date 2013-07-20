@@ -58,7 +58,7 @@ public class MotorRPMUseCase implements ExampleUseCase {
 
     @Override
     public Iterator<Number> samples() {
-        //TODO: after other examples find way to extract iterator?
+        
         return new Iterator<Number>() {
             int countRemaining = samplesCount;
             
@@ -74,13 +74,8 @@ public class MotorRPMUseCase implements ExampleUseCase {
                 }
                 //in this example 1 is white and 0 is black
                 //this makes 128 (1 or 0) in a row before switching.
-                Integer result = audit(((samplesCount-countRemaining)>>7)%2,"shaftSample");
-                
-//                continueAuditTo("RawData", result);
-//                //TODO: need lookup to work with this? put in another test!
-//                Integer newResult = continueAuditFrom("RawData", result.intValue());
-                
-                return result;
+                return continueAuditFrom("shaftSample", ((samplesCount-countRemaining)>>7)%2);
+
             }
 
             @Override
