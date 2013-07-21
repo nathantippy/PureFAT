@@ -46,14 +46,6 @@ public class PFVerbose implements PFImpl {
     }
     
     /* (non-Javadoc)
-     * @see com.ociweb.purefat.PFImpl#dispose(java.lang.Number)
-     */
-    @Override
-    public final void flush(Number number) {
-        auditTrail.flush(number);
-    }
-    
-    /* (non-Javadoc)
      * @see com.ociweb.purefat.PFImpl#auditIsTightRadian(java.lang.Number)
      */
     @Override

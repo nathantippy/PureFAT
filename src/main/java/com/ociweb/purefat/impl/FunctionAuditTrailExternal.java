@@ -42,12 +42,11 @@ import org.slf4j.helpers.MessageFormatter;
 
 public class FunctionAuditTrailExternal implements FunctionAuditTrail {
 
-    
     private final Logger pureFATLogger;
-    
+
     private final Map<String,AtomicInteger> channelToCount = new HashMap<String,AtomicInteger>();
     private final Map<String,AtomicInteger> channelFromCount = new HashMap<String,AtomicInteger>();
-    
+
     public FunctionAuditTrailExternal(Logger logger) {
         pureFATLogger = logger;
     }
@@ -240,11 +239,5 @@ public class FunctionAuditTrailExternal implements FunctionAuditTrail {
         // TODO: query logback by this key? Get the line number data?
         return null;
     }
-
-    @Override
-    public boolean flush(Number key) {
-        return true;
-    }
-
 
 }

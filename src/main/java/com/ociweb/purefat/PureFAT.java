@@ -68,8 +68,6 @@ public class PureFAT {
     private static final PFImpl pf = chooseImpl();
     
     
-   // public static boolean isDebugEnabled = logger.isDebugEnabled();
-    
     private static PFImpl chooseImpl() {
 
         
@@ -110,15 +108,6 @@ public class PureFAT {
             return new PFVerbose(fat);
         }
         return new PFDefault(fat);
-    }
-
-    /**
-     * Dump from RAM before growing array or using GC even when still in use.
-     * 
-     * @param number
-     */
-    public static final void flush(Number number) {
-        pf.flush(number);
     }
     
     public static final void auditIsFinite(Number number) {
@@ -310,20 +299,22 @@ public class PureFAT {
         return boxed;
     }
     
-    
     public static final void continueAuditTo(String channelId, Number boxed) {
         pf.continueAuditTo(channelId,boxed);
     }
+    
     public static final Double continueAuditFrom(String channelId, double value) {
         Double boxed = new Double(value);
         pf.continueAuditFrom(channelId, boxed);
         return boxed;
     }
+    
     public static final Integer continueAuditFrom(String channelId, int value) {
         Integer boxed = new Integer(value);
         pf.continueAuditFrom(channelId, boxed);
         return boxed;
     }
+    
     public static final Number continueAuditNumberFrom(String channelId, Number boxed) {
         pf.continueAuditFrom(channelId, boxed);
         return boxed;

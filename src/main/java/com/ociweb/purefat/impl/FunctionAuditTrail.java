@@ -34,8 +34,6 @@ package com.ociweb.purefat.impl;
 
 public interface FunctionAuditTrail {
 
-    public boolean flush(Number key);
-    
     public Function get(Number key);
     
     public Function get(Number key, Function startHere);

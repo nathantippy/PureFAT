@@ -40,12 +40,6 @@ public class DualAuditTrail implements FunctionAuditTrail {
         this.primary = primary;
         this.secondary = secondary;
     }
-    
-    @Override
-    public boolean flush(Number key) {
-        return primary.flush(key)&
-                secondary.flush(key);
-    }
 
     @Override
     public Function get(Number key) {

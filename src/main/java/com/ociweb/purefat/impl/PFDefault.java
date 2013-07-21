@@ -44,14 +44,6 @@ public class PFDefault implements PFImpl {
     public PFDefault(FunctionAuditTrail auditTrail) {
         this.auditTrail = auditTrail;
     }
-    
-    /* (non-Javadoc)
-     * @see com.ociweb.purefat.PFImpl#dispose(java.lang.Number)
-     */
-    @Override
-    public final void flush(Number number) {
-        assert(auditTrail.flush(number));
-    }
 
     /* (non-Javadoc)
      * @see com.ociweb.purefat.PFImpl#auditIsTightRadian(java.lang.Number)

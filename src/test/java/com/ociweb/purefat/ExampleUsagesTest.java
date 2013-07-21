@@ -57,8 +57,8 @@ import com.ociweb.purefat.useCase.MotorRPMUseCase;
 public class ExampleUsagesTest {
 
     static {
-        //Only use internal logging to speed up test.
-//     (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(PureFAT.class).setLevel(Level.TRACE);//TODO: hack to check on logger?
+        //Only use internal logging to speed up test. //TODO: hack to check on logger?
+//     (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(PureFAT.class).setLevel(Level.TRACE);
     //    System.setProperty("purefat.external", "true");
         
         //Do not use assertions, it makes testing inconsistent.
@@ -82,7 +82,7 @@ public class ExampleUsagesTest {
      * @param useCase
      */
     private void simulateProdEnvironment(ExampleUseCase useCase) {
-        int queueCapacity = 10;
+        int queueCapacity = 3;
         
         //simulated production hardware samples are written to this queue
         BlockingQueue<Number> sampleQueue = new ArrayBlockingQueue<Number>(queueCapacity);

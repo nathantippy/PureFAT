@@ -67,7 +67,7 @@ Roadmap
         is unique. Validating compiler to throw compile error if they are NOT. 
     
         * logback module for analysis of logged events for stack reconstruction
-        off line.
+        off line. https://github.com/qos-ch/logback-decoder
         
         * mongoDB logback module to support analysis of multiple JVM instances 
         from one place.

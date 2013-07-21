@@ -31,21 +31,9 @@
  */
 package com.ociweb.purefat.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.ociweb.purefat.FATTemplate;
 
 public class PFNone implements PFImpl {
-    
-    private static final Logger logger = LoggerFactory.getLogger(PFNone.class);
-    
-    /* (non-Javadoc)
-     * @see com.ociweb.purefat.PFImpl#dispose(java.lang.Number)
-     */
-    @Override
-    public final void flush(Number number) {
-    }
 
     /* (non-Javadoc)
      * @see com.ociweb.purefat.PFImpl#auditIsTightRadian(java.lang.Number)

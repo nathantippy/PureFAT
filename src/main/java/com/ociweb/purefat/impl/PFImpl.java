@@ -38,8 +38,6 @@ public interface PFImpl {
     final String     LABEL_WRAP = "{}";
     final int        MAX_PARAMS = 7;
 
-    void flush(Number number);
-
     void auditIsTightRadian(Number number); // only +- pi 
     
     void auditIsPositiveRadian(Number number); // 0 to 2pi
