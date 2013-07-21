@@ -27,7 +27,8 @@ Working Features
     # Supports logging trace as needed for "questionable data"
     # Supports internal memory mode or external slf4j mode or both.
     # Audit can be printed as detailed table, summary or tree.
-
+    # Minimal dependencies (SLF4J)
+    
 Example
 ------
 

@@ -55,7 +55,7 @@ public class SpeedComparisons {
     
     static {
         //Only use the in-memory version to shorten testing time.
-        System.setProperty("purefat.internal", "true");
+     //  System.setProperty("purefat.internal", "true");
         //Do not use assertions, it makes testing inconsistent.
         System.setProperty("purefat.verbose", "true");
         

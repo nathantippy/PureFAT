@@ -33,16 +33,17 @@ package com.ociweb.purefat.useCase;
 
 import java.util.Iterator;
 
-public interface ExampleUseCase {
+import com.ociweb.purefat.FailureCatalog;
 
-    Iterator<Number> samples();
+public interface ExampleUseCase<T,R> {
 
-    int samplesCount();
+    Iterator<T> samples();
+    FailureCatalog samplesFailureCatalog();
 
-    Number computeResult(Number sample);
+    Iterator<R> compute();
+    FailureCatalog computeFailureCatalog();
 
-    void validatResult(Number result);
-    
-    boolean isFailureExpected(int index);
+    Iterator<Object> validate();
+    FailureCatalog validateFailureCatalog();
 
 }

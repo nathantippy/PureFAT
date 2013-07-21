@@ -57,72 +57,78 @@ public enum FATTemplate {
         public boolean log(Logger logger,
                 FunctionAuditTrail functionAuditTrail, Number keyNumber,
                 StackTraceElement[] stackTrace) {
-            LinkedHashMap<Number, Function> table = new LinkedHashMap<Number, Function>();
-            populateTable(functionAuditTrail, keyNumber, table);
-            logTable(logger, functionAuditTrail, table);
+            List<Number> columnNumbers = new ArrayList<Number>();
+            List<Function> columnFunctions = new ArrayList<Function>();
+            populateTable(functionAuditTrail, keyNumber, columnNumbers, columnFunctions);
+            logTable(logger, functionAuditTrail, columnNumbers, columnFunctions);
             return true;
         }
 
         private void logTable(Logger logger,
                 FunctionAuditTrail functionAuditTrail,
-                LinkedHashMap<Number, Function> table) {
+                List<Number> rawColumnNumbers, 
+                List<Function> rawColumnFunctions) {
             StringBuilder builder = new StringBuilder();
 
             // <Value> = <Expression> <StackElement> <LabelInterpolated>
-            List<String> columnValue = new ArrayList<String>();
+            List<String> templateColumnValue = new ArrayList<String>();
             int columnWidth = 0;
 
-            List<String> columnExpression = new ArrayList<String>();
+            List<String> templateColumnExpression = new ArrayList<String>();
             int columnExpressionWidth = 0;
 
-            List<String> columnStackElement = new ArrayList<String>();
+            List<String> templateColumnStackElement = new ArrayList<String>();
             int columnStackElementWidth = 0;
 
-            List<String> columnLabelInterpolated = new ArrayList<String>();
+            List<String> templateColumnLabelInterpolated = new ArrayList<String>();
             int columnLabelInterpolatedWidth = 0;
 
-            for (Entry<Number, Function> entry : table.entrySet()) {
+            int idx = 0;
+            while (idx<rawColumnNumbers.size()) {
+                Number num = rawColumnNumbers.get(idx);
+                Function fun = rawColumnFunctions.get(idx);
+                
                 // do not report the undefined missing values
-                if (entry.getValue().getPrivateIndex() >= 0) {
+                if (fun.getPrivateIndex() >= 0) {
 
-                    columnWidth = columnWidth(entry.getKey().toString(),
-                            columnValue, columnWidth);
-                    columnExpressionWidth = columnWidth(entry.getValue()
-                            .toString(), columnExpression,
+                    columnWidth = columnWidth(num.toString(),
+                            templateColumnValue, columnWidth);
+                    columnExpressionWidth = columnWidth(num.toString(), templateColumnExpression,
                             columnExpressionWidth);
                     columnStackElementWidth = columnWidth(functionAuditTrail
-                            .metaData(entry.getValue()).stackElement(),
-                            columnStackElement, columnStackElementWidth);
+                            .metaData(fun).stackElement(),
+                            templateColumnStackElement, columnStackElementWidth);
 
-                    String interpolated = entry.getValue().labelName()
-                            + Util.wrapId(entry.getKey());
-                    if (!entry.getValue().isLabel()) {
+                    String interpolated = fun.labelName()
+                            + Util.wrapId(num);
+                    if (!fun.isLabel()) {
                         interpolated = interpolated
                                 + EQUALS_SYMBOL
                                 + idInterpolate(functionAuditTrail,
-                                        entry.getValue(), false);
+                                        fun, false);
                     }
                     columnLabelInterpolatedWidth = columnWidth(interpolated,
-                            columnLabelInterpolated,
+                            templateColumnLabelInterpolated,
                             columnLabelInterpolatedWidth);
 
                 }
+                idx++;
             }
 
             int i = 0;
-            while (i < columnValue.size()) {
+            while (i < templateColumnValue.size()) {
 
                 builder.append("\n  ");
-                leftJustify(builder, columnWidth, columnValue.get(i));
+                leftJustify(builder, columnWidth, templateColumnValue.get(i));
                 builder.append(EQUALS_SYMBOL);
                 leftJustify(builder, columnExpressionWidth,
-                        columnExpression.get(i));
+                        templateColumnExpression.get(i));
                 builder.append(SPACE);
                 leftJustify(builder, columnStackElementWidth,
-                        columnStackElement.get(i));
+                        templateColumnStackElement.get(i));
                 builder.append(SPACE);
                 leftJustify(builder, columnLabelInterpolatedWidth,
-                        columnLabelInterpolated.get(i));
+                        templateColumnLabelInterpolated.get(i));
                 i++;
             }
 
@@ -191,62 +197,67 @@ public enum FATTemplate {
         public boolean log(Logger logger,
                 FunctionAuditTrail functionAuditTrail, Number keyNumber,
                 StackTraceElement[] stackTrace) {
-            LinkedHashMap<Number, Function> table = new LinkedHashMap<Number, Function>();
-            populateTable(functionAuditTrail, keyNumber, table);
-            logTableSummary(logger, functionAuditTrail, table);
+            List<Number> columnNumbers = new ArrayList<Number>();
+            List<Function> columnFunctions = new ArrayList<Function>();
+            populateTable(functionAuditTrail, keyNumber, columnNumbers, columnFunctions);
+            logTableSummary(logger, functionAuditTrail, columnNumbers, columnFunctions);
             return true;
         }
 
         private void logTableSummary(Logger logger,
                 FunctionAuditTrail functionAuditTrail,
-                LinkedHashMap<Number, Function> table) {
+                List<Number> rawColumnNumbers, List<Function> rawColumnFunctions) {
             StringBuilder builder = new StringBuilder();
 
             // <StackElement> <CallCount> <LabelExpression>
 
-            List<String> columnStackElement = new ArrayList<String>();
+            List<String> templateColumnStackElement = new ArrayList<String>();
             int columnStackElementWidth = 0;
 
-            List<AtomicInteger> columnCallCount = new ArrayList<AtomicInteger>();
+            List<AtomicInteger> templateColumnCallCount = new ArrayList<AtomicInteger>();
             int columnCallCountWidth = 0;
 
-            List<String> columnLabelInterpolated = new ArrayList<String>();
+            List<String> templateColumnLabelInterpolated = new ArrayList<String>();
             int columnLabelInterpolatedWidth = 0;
             
-            List<Number> columnNumber = new ArrayList<Number>();
-            List<Function> columnFunction = new ArrayList<Function>();
+            List<Number> templateColumnNumber = new ArrayList<Number>();
+            List<Function> templateColumnFunction = new ArrayList<Function>();
 
             Map<String, AtomicInteger> done = new HashMap<String, AtomicInteger>();
-            for (Entry<Number, Function> entry : table.entrySet()) {
+            int idx = 0;
+            while (idx<rawColumnNumbers.size()) {
+                Number num = rawColumnNumbers.get(idx);
+                Function fun = rawColumnFunctions.get(idx);
+                
                 // do not report the undefined missing values
-                if (entry.getValue().getPrivateIndex() >= 0) {
+                if (fun.getPrivateIndex() >= 0) {
 
                     // each unique interpolated string gets a line
-                    String interpolated = entry.getValue().labelTag();
-                    if (!entry.getValue().isLabel()) {
+                    String interpolated = fun.labelTag();
+                    if (!fun.isLabel()) {
                         interpolated = interpolated
                                 + EQUALS_SYMBOL
                                 + idInterpolate(functionAuditTrail,
-                                                entry.getValue(), true);
+                                                fun, true);
                     }
 
                     if (!done.containsKey(interpolated)) {
                         AtomicInteger callCount = new AtomicInteger(1);
 
                         columnStackElementWidth = columnWidth(
-                                functionAuditTrail.metaData(entry.getValue())
-                                        .stackElement(), columnStackElement,
+                                functionAuditTrail.metaData(fun)
+                                        .stackElement(), templateColumnStackElement,
                                 columnStackElementWidth);
 
                         columnCallCountWidth = columnWidth(callCount,
-                                columnCallCount, columnCallCountWidth);
+                                templateColumnCallCount, columnCallCountWidth);
 
                         columnLabelInterpolatedWidth = columnWidth(
-                                interpolated, columnLabelInterpolated,
+                                interpolated, templateColumnLabelInterpolated,
                                 columnLabelInterpolatedWidth);
                         
-                        columnFunction.add(entry.getValue());
-                        columnNumber.add(entry.getKey());
+                        templateColumnFunction.add(fun);
+                        templateColumnNumber.add(num);
 
                         done.put(interpolated, callCount);
 
@@ -258,25 +269,26 @@ public enum FATTemplate {
                                                 .incrementAndGet()).length());
                     }
                 }
+                idx++;
             }
 
             int i = 0;
-            while (i < columnStackElement.size()) {
+            while (i < templateColumnStackElement.size()) {
 
                 builder.append("\n  ");
                 leftJustify(builder, columnStackElementWidth,
-                        columnStackElement.get(i));
+                        templateColumnStackElement.get(i));
                 builder.append(SPACE);
                 leftJustify(builder, columnCallCountWidth,
-                        columnCallCount.get(i).toString());
+                        templateColumnCallCount.get(i).toString());
                 builder.append(SPACE);
                 leftJustify(builder, columnLabelInterpolatedWidth,
-                        columnLabelInterpolated.get(i));
+                        templateColumnLabelInterpolated.get(i));
                 builder.append(SPACE);
-                if(1==columnCallCount.get(i).intValue()) {
+                if(1==templateColumnCallCount.get(i).intValue()) {
                     //there is only one usage so display the real values.
-                    builder.append(columnNumber.get(i).toString()).append(EQUALS_SYMBOL);
-                    builder.append(columnFunction.get(i).toString());
+                    builder.append(templateColumnNumber.get(i).toString()).append(EQUALS_SYMBOL);
+                    builder.append(templateColumnFunction.get(i).toString());
                 }
                 
                 i++;
@@ -364,24 +376,29 @@ public enum FATTemplate {
 
     private static final void populateTable(
             FunctionAuditTrail functionAuditTrail, Number keyNumber,
-            LinkedHashMap<Number, Function> table) {
+            List<Number> columnNumbers, List<Function> columnFunctions) {
+        
         Function ex = (Function) functionAuditTrail.get(keyNumber);
         if (null != ex) {
             if (!ex.isLabel()) {
                 for (Number param : ex.params()) {
                     if (param == keyNumber) {
                         // self referential
-                        table.put(keyNumber, ex);
+                        columnNumbers.add(param);
+                        columnFunctions.add(ex);
                     } else {
                         if (null != param) {
-                            populateTable(functionAuditTrail, param, table);
+                            populateTable(functionAuditTrail, param, 
+                                          columnNumbers, columnFunctions);
                         }
                     }
                 }
             }
-            table.put(keyNumber, ex);
+            columnNumbers.add(keyNumber);
+            columnFunctions.add(ex);
         } else {
-            table.put(keyNumber, new Function(keyNumber));
+            columnNumbers.add(keyNumber);
+            columnFunctions.add(new Function(keyNumber));
         }
     }
 

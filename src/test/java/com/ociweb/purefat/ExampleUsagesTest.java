@@ -57,13 +57,8 @@ import com.ociweb.purefat.useCase.MotorRPMUseCase;
 public class ExampleUsagesTest {
 
     static {
-        //Only use internal logging to speed up test. //TODO: hack to check on logger?
-//     (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(PureFAT.class).setLevel(Level.TRACE);
-    //    System.setProperty("purefat.external", "true");
-        
         //Do not use assertions, it makes testing inconsistent.
         System.setProperty("purefat.verbose", "true");
-
     }
     
     static final Logger logger = LoggerFactory.getLogger(ExampleUsagesTest.class);
@@ -82,27 +77,20 @@ public class ExampleUsagesTest {
      * @param useCase
      */
     private void simulateProdEnvironment(ExampleUseCase useCase) {
-        int queueCapacity = 3;
-        
-        //simulated production hardware samples are written to this queue
-        BlockingQueue<Number> sampleQueue = new ArrayBlockingQueue<Number>(queueCapacity);
-        //simulated production infrastructure reads from sampleQueue and writes to this queue
-        BlockingQueue<Number> reportQueue = new ArrayBlockingQueue<Number>(queueCapacity);
-        //simulated production report generation reads from the report queue
         
         ExecutorService executor = Executors.newFixedThreadPool(3);
         //this thread will take samples from the hardware and put them on sampleQueue
-        Future<?> f1 = executor.submit(productionSampler(useCase,sampleQueue));
+        Future<?> sampleData = executor.submit(productionNode(useCase.samples(), useCase.samplesFailureCatalog()));
         //this thread will take samples from sampleQueue do some computation and put the
         //result on the report queue
-        Future<?> f2 = executor.submit(productionInfrastructure(useCase,sampleQueue,reportQueue));
+        Future<?> computeData = executor.submit(productionNode(useCase.compute(), useCase.computeFailureCatalog()));
         //this thread will take the results off the report queue and confirm the expected values.
-        Future<?> f3 = executor.submit(productionReports(useCase,reportQueue));
+        Future<?> validateData = executor.submit(productionNode(useCase.validate(),useCase.validateFailureCatalog()));
         
         try {
-            f1.get();
-            f2.get();
-            f3.get();
+            sampleData.get();
+            computeData.get();
+            validateData.get();
         } catch (InterruptedException ie) {
             ie.printStackTrace();
         } catch (ExecutionException ee) {
@@ -114,80 +102,26 @@ public class ExampleUsagesTest {
         executor.shutdown();
     }
 
-    private Runnable productionSampler(final ExampleUseCase useCase,
-                                        final BlockingQueue<Number> sampleQueue) {
-        
-        return new Runnable() {
-            @Override
-            public void run() {
-                Iterator<Number> samples = useCase.samples();
-                while (samples.hasNext()) {
-                    try {
-                        Number next = samples.next();
-                        sampleQueue.put(next);
-                    } catch (FATConstraintViolation cv) {
-                        logger.error("unexpected",cv);
-                        fail("Unexpected exception");
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                        return;
-                    }
-                }
-            }
-            
-        };
-    }
-
-    private Runnable productionInfrastructure(final ExampleUseCase useCase,
-                                               final BlockingQueue<Number> sampleQueue, 
-                                               final BlockingQueue<Number> reportQueue) {
-        
-        return new Runnable() {
-            @Override
-            public void run() {
-                int count = useCase.samplesCount();
-                while (--count>=0) {
-                    try {
-                        Number sample = sampleQueue.take();
-                        Number result = useCase.computeResult(sample);
-                        reportQueue.put(result);
-                    } catch (FATConstraintViolation cv) {
-                        logger.error("unexpected",cv);
-                        fail("Unexpected exception");
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                        return;
-                    }
-                }
-            }
-            
-        };
-    }
-
-    private Runnable productionReports(final ExampleUseCase useCase,
-                                        final BlockingQueue<Number> reportQueue) {
+    private <T> Runnable productionNode(final Iterator<T> sourceData,
+                                         final FailureCatalog expectedFailureCatalog) {
         
         return new Runnable() {
             @Override
             public void run() {
                 AssertionError assertionError = null;
-                int remainingCount = useCase.samplesCount();
-                int index = 0;
-                while (--remainingCount>=0) {
+                int index=0;
+                while (sourceData.hasNext()) {
                     try {
                         try {
-                            Number result = reportQueue.take();
-                            useCase.validatResult(result);
+                            //due to the memory hungry nature of the audit trails
+                            //do not keep the resulting value from calling next
+                            sourceData.next();
                             assertFalse("Failure expected at index "+index,
-                                        useCase.isFailureExpected(index));
+                                    expectedFailureCatalog.isFailureExpected(index));
                         } catch (FATConstraintViolation cv) {
-                            logger.error("isExpected:"+useCase.isFailureExpected(index), cv);
+                            logger.error("isExpected:"+expectedFailureCatalog.isFailureExpected(index), cv);
                             assertTrue("No falure expected at index "+index,
-                                       useCase.isFailureExpected(index));
-                            
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                            return;
+                                    expectedFailureCatalog.isFailureExpected(index));
                         }
                     } catch (AssertionError ae) {
                         //for thread management simplicity nothing is stopped
@@ -200,11 +134,10 @@ public class ExampleUsagesTest {
                     }
                     index++;
                 }
-                if (null!=assertionError) {
-                    throw assertionError;
-                }
             }
+            
         };
     }
+
 
 }
