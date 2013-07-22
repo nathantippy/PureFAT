@@ -29,21 +29,23 @@
  * bitcoin:1NBzAoTTf1PZpYTn7WbXDTf17gddJHC8eY?amount=0.01&message=PFAT%20donation
  *
  */
-package com.ociweb.purefat.useCase;
+package com.ociweb.purefat.useCase.foundation;
 
 import java.util.Iterator;
 
-import com.ociweb.purefat.FailureCatalog;
 
-public interface ExampleUseCase<T,R> {
+public interface TestablePureFATUseCase<T, R> {
 
     Iterator<T> samples();
-    FailureCatalog samplesFailureCatalog();
+
+    ExpectedFailureCatalog samplesFailureCatalog();
 
     Iterator<R> compute();
-    FailureCatalog computeFailureCatalog();
+
+    ExpectedFailureCatalog computeFailureCatalog();
 
     Iterator<Object> validate();
-    FailureCatalog validateFailureCatalog();
+
+    ExpectedFailureCatalog validateFailureCatalog();
 
 }

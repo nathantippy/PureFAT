@@ -110,6 +110,14 @@ public class PureFAT {
         return new PFDefault(fat);
     }
     
+    public static final void auditIsPositiveRadian(Number number) {
+        pf.auditIsPositiveRadian(number);
+    }
+    
+    public static final void auditIsTightRadian(Number number) {
+        pf.auditIsTightRadian(number);
+    }
+    
     public static final void auditIsFinite(Number number) {
         pf.auditIsFinite(number);
     }

@@ -51,24 +51,33 @@ import org.slf4j.LoggerFactory;
 import ch.qos.logback.classic.Level;
 
 import com.ociweb.purefat.impl.FATConstraintViolation;
-import com.ociweb.purefat.useCase.ExampleUseCase;
+import com.ociweb.purefat.useCase.ACPowerUseCase;
 import com.ociweb.purefat.useCase.MotorRPMUseCase;
+import com.ociweb.purefat.useCase.foundation.TestablePureFATUseCase;
+import com.ociweb.purefat.useCase.foundation.ExpectedFailureCatalog;
 
 public class ExampleUsagesTest {
 
     static {
-        //Do not use assertions, it makes testing inconsistent.
+        // Do not use assertions, it makes testing inconsistent.
         System.setProperty("purefat.verbose", "true");
     }
-    
-    static final Logger logger = LoggerFactory.getLogger(ExampleUsagesTest.class);
-    
+
+    static final Logger logger = LoggerFactory
+            .getLogger(ExampleUsagesTest.class);
+
     @Test
     public void testMotorRPM() {
         simulateProdEnvironment(new MotorRPMUseCase(true));
         simulateProdEnvironment(new MotorRPMUseCase(false));
     }
     
+    @Test
+    public void testACPower() {
+        simulateProdEnvironment(new ACPowerUseCase(true));
+        simulateProdEnvironment(new ACPowerUseCase(false));
+    }
+
     /**
      * Simulation uses threads for each step of the processing to demonstrate
      * that audit trails are still reproducible even after changing threads and
@@ -76,17 +85,23 @@ public class ExampleUsagesTest {
      * 
      * @param useCase
      */
-    private void simulateProdEnvironment(ExampleUseCase useCase) {
-        
+    private void simulateProdEnvironment(TestablePureFATUseCase useCase) {
+
         ExecutorService executor = Executors.newFixedThreadPool(3);
-        //this thread will take samples from the hardware and put them on sampleQueue
-        Future<?> sampleData = executor.submit(productionNode(useCase.samples(), useCase.samplesFailureCatalog()));
-        //this thread will take samples from sampleQueue do some computation and put the
-        //result on the report queue
-        Future<?> computeData = executor.submit(productionNode(useCase.compute(), useCase.computeFailureCatalog()));
-        //this thread will take the results off the report queue and confirm the expected values.
-        Future<?> validateData = executor.submit(productionNode(useCase.validate(),useCase.validateFailureCatalog()));
-        
+        // this thread will take samples from the hardware and put them on
+        // sampleQueue
+        Future<?> sampleData = executor.submit(productionNode(
+                useCase.samples(), useCase.samplesFailureCatalog()));
+        // this thread will take samples from sampleQueue do some computation
+        // and put the
+        // result on the report queue
+        Future<?> computeData = executor.submit(productionNode(
+                useCase.compute(), useCase.computeFailureCatalog()));
+        // this thread will take the results off the report queue and confirm
+        // the expected values.
+        Future<?> validateData = executor.submit(productionNode(
+                useCase.validate(), useCase.validateFailureCatalog()));
+
         try {
             sampleData.get();
             computeData.get();
@@ -95,7 +110,7 @@ public class ExampleUsagesTest {
             ie.printStackTrace();
         } catch (ExecutionException ee) {
             if (ee.getCause() instanceof Error) {
-                throw (Error)ee.getCause();
+                throw (Error) ee.getCause();
             }
             ee.printStackTrace();
         }
@@ -103,30 +118,38 @@ public class ExampleUsagesTest {
     }
 
     private <T> Runnable productionNode(final Iterator<T> sourceData,
-                                         final FailureCatalog expectedFailureCatalog) {
-        
+            final ExpectedFailureCatalog expectedFailureCatalog) {
+
         return new Runnable() {
             @Override
             public void run() {
                 AssertionError assertionError = null;
-                int index=0;
+                int index = 0;
                 while (sourceData.hasNext()) {
                     try {
                         try {
-                            //due to the memory hungry nature of the audit trails
-                            //do not keep the resulting value from calling next
+                            // due to the memory hungry nature of the audit
+                            // trails
+                            // do not keep the resulting value from calling next
                             sourceData.next();
-                            assertFalse("Failure expected at index "+index,
-                                    expectedFailureCatalog.isFailureExpected(index));
+                            assertFalse("Failure expected at index " + index,
+                                    expectedFailureCatalog
+                                            .isFailureExpected(index));
                         } catch (FATConstraintViolation cv) {
-                            logger.error("isExpected:"+expectedFailureCatalog.isFailureExpected(index), cv);
-                            assertTrue("No falure expected at index "+index,
-                                    expectedFailureCatalog.isFailureExpected(index));
+                            logger.error(
+                                    "isExpected:"
+                                            + expectedFailureCatalog
+                                                    .isFailureExpected(index),
+                                    cv);
+                            assertTrue("No failure expected at index " + index,
+                                    expectedFailureCatalog
+                                            .isFailureExpected(index));
                         }
                     } catch (AssertionError ae) {
-                        //for thread management simplicity nothing is stopped
-                        //when an error is detected. Instead we keep it for later.
-                        if (null==assertionError) {
+                        // for thread management simplicity nothing is stopped
+                        // when an error is detected. Instead we keep it for
+                        // later.
+                        if (null == assertionError) {
                             assertionError = ae;
                         } else {
                             assertionError.addSuppressed(ae);
@@ -134,10 +157,12 @@ public class ExampleUsagesTest {
                     }
                     index++;
                 }
+                if (null!=assertionError) {
+                    throw assertionError;
+                }
             }
-            
+
         };
     }
-
 
 }

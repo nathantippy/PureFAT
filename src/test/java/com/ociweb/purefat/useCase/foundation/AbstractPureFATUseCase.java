@@ -1,15 +1,14 @@
-package com.ociweb.purefat.useCase;
+package com.ociweb.purefat.useCase.foundation;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import com.ociweb.purefat.FailureCatalog;
 
-public abstract class AbstractUseCase<S, R> implements ExampleUseCase<S, R> {
+public abstract class AbstractPureFATUseCase<S, R> implements TestablePureFATUseCase<S, R> {
 
-    private static final FailureCatalog NO_FAILURE = new FailureCatalog() {
+    private static final ExpectedFailureCatalog NO_FAILURE = new ExpectedFailureCatalog() {
                                                         @Override
                                                         public boolean isFailureExpected(int index) {
                                                             return false;
@@ -21,22 +20,22 @@ public abstract class AbstractUseCase<S, R> implements ExampleUseCase<S, R> {
     private final BlockingQueue<S> sampleQueue = new ArrayBlockingQueue<S>(queueCapacity);
     private final BlockingQueue<R> reportQueue = new ArrayBlockingQueue<R>(queueCapacity);
 
-    public AbstractUseCase(boolean testBrokenCode) {
+    public AbstractPureFATUseCase(boolean testBrokenCode) {
         this.testBrokenCode = testBrokenCode;
     }
 
     @Override
-    public FailureCatalog computeFailureCatalog() {
+    public ExpectedFailureCatalog computeFailureCatalog() {
         return NO_FAILURE;
     }
 
     @Override
-    public FailureCatalog samplesFailureCatalog() {
+    public ExpectedFailureCatalog samplesFailureCatalog() {
         return NO_FAILURE;
     }
     
     @Override
-    public FailureCatalog validateFailureCatalog() {
+    public ExpectedFailureCatalog validateFailureCatalog() {
         return NO_FAILURE;
     }
 
@@ -56,7 +55,7 @@ public abstract class AbstractUseCase<S, R> implements ExampleUseCase<S, R> {
                 if (--countRemaining<0) {
                     throw new NoSuchElementException();
                 }
-                S result = simulatedSample(countRemaining);
+                S result = simulatedSample(samplesCount - countRemaining);
                 try {
                     sampleQueue.put(result);
                 } catch (InterruptedException e) {
@@ -71,7 +70,7 @@ public abstract class AbstractUseCase<S, R> implements ExampleUseCase<S, R> {
                 throw new UnsupportedOperationException();
             }};
     }
-    protected abstract S simulatedSample(int countRemaining);
+    protected abstract S simulatedSample(int idx);
 
     @Override
     public Iterator<R> compute() {
@@ -92,7 +91,7 @@ public abstract class AbstractUseCase<S, R> implements ExampleUseCase<S, R> {
                 S sample;
                 try {
                     sample = sampleQueue.take();
-                    R result = simulateCompute(sample);
+                    R result = simulateCompute(samplesCount - countRemaining, sample);
                     reportQueue.put(result);
                     return result;
                 } catch (InterruptedException e) {
@@ -107,7 +106,7 @@ public abstract class AbstractUseCase<S, R> implements ExampleUseCase<S, R> {
                 throw new UnsupportedOperationException();
             }};
     }
-    protected abstract R simulateCompute(S sample);
+    protected abstract R simulateCompute(int idx, S sample);
     
     
     @Override
@@ -129,7 +128,7 @@ public abstract class AbstractUseCase<S, R> implements ExampleUseCase<S, R> {
                 R report;
                 try {
                     report = reportQueue.take();
-                    simulateValidate(report);
+                    simulateValidate(samplesCount - countRemaining, report);
                 } catch (InterruptedException e) {
                     countRemaining=0;
                     Thread.currentThread().interrupt();
@@ -142,6 +141,6 @@ public abstract class AbstractUseCase<S, R> implements ExampleUseCase<S, R> {
                 throw new UnsupportedOperationException();
             }};
     }
-    protected abstract void simulateValidate(R result);
+    protected abstract void simulateValidate(int idx, R result);
     
 }

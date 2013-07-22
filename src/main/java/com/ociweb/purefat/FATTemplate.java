@@ -93,7 +93,7 @@ public enum FATTemplate {
 
                     columnWidth = columnWidth(num.toString(),
                             templateColumnValue, columnWidth);
-                    columnExpressionWidth = columnWidth(num.toString(), templateColumnExpression,
+                    columnExpressionWidth = columnWidth(fun.toString(), templateColumnExpression,
                             columnExpressionWidth);
                     columnStackElementWidth = columnWidth(functionAuditTrail
                             .metaData(fun).stackElement(),
@@ -137,7 +137,7 @@ public enum FATTemplate {
         }
 
     },
-    tree { // TODO: still in work, not sure this template is as helpful as it could be.
+    tree {
         @Override
         public boolean log(Logger logger,
                 FunctionAuditTrail functionAuditTrail, Number keyNumber,
