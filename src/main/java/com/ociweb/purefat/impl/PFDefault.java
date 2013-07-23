@@ -141,6 +141,11 @@ public class PFDefault implements PFImpl {
         assert(auditTrail.save(value,label,LABEL_WRAP,value));
     }
 
+    @Override
+    public void audit(Number value, String label, String expressionText) {
+        assert(auditTrail.save(value,label,expressionText));
+    }
+    
     /* (non-Javadoc)
      * @see com.ociweb.purefat.PFImpl#audit(double, java.lang.String, java.lang.String, java.lang.Number)
      */
@@ -214,6 +219,7 @@ public class PFDefault implements PFImpl {
     public void continueAuditFrom(String channelId, Number boxed) {
         assert(auditTrail.continueAuditFrom(channelId,boxed));
     }
+
 
     
 }

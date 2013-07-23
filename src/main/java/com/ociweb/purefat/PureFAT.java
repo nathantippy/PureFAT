@@ -171,6 +171,12 @@ public class PureFAT {
         return boxed;
     }
 
+    public static final Double audit(double value, String label, String expressionText) {
+        Double boxed = new Double(value);
+        pf.audit(boxed, label, expressionText);
+        return boxed;
+    }
+    
     public static final Double audit(double value, String label, String expressionText, Number p1) {
         Double boxed = new Double(value);
         pf.audit(boxed, label, expressionText, p1);

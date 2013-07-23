@@ -57,6 +57,11 @@ public class DualAuditTrail implements FunctionAuditTrail {
     }
 
     @Override
+    public boolean save(Number number, String label, String expression) {
+        return save(number,label,expression,new Number[]{});
+    }
+    
+    @Override
     public boolean save(Number number, String label, String expression,
             Number p1) {
         return save(number,label,expression,new Number[]{p1});

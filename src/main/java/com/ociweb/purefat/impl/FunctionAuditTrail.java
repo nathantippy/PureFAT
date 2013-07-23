@@ -40,6 +40,8 @@ public interface FunctionAuditTrail {
     
     public FunMetaData metaData(Function fun);
     
+    public boolean save(Number number, String label, String expression);
+    
     public boolean save(Number number, String label, String expression,
             Number p1);
 

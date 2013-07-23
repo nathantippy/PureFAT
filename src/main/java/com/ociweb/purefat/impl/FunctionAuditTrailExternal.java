@@ -52,6 +52,12 @@ public class FunctionAuditTrailExternal implements FunctionAuditTrail {
     }
     
     @Override
+    public boolean save(Number number, String label, String expression) {
+        save(number,label,expression,new Number[]{});
+        return true;
+    }
+    
+    @Override
     public boolean save(Number number, String label, String expression,
                          Number p1) {
         save(number,label,expression,new Number[]{p1});

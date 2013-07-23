@@ -92,7 +92,6 @@ public class Function {
         this.text = expressionText;
         return true;
     }
-
     
     public final boolean init(String label, String expressionText,
                                 Number p0) {

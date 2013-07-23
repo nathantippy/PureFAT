@@ -162,6 +162,11 @@ public class PFVerbose implements PFImpl {
         auditTrail.save(value,label,LABEL_WRAP, value);
     }
 
+    @Override
+    public void audit(Number value, String label, String expressionText) {
+        auditTrail.save(value,label,expressionText);
+    }
+    
     /* (non-Javadoc)
      * @see com.ociweb.purefat.PFImpl#audit(double, java.lang.String, java.lang.String, java.lang.Number)
      */

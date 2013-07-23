@@ -128,6 +128,17 @@ public class FunctionAuditTrailInternal implements FunctionAuditTrail  {
     }
 
     /* (non-Javadoc)
+     * @see com.ociweb.purefat.ExpressionWriter#save(java.lang.Number, java.lang.String, java.lang.String)
+     */
+    @Override
+    public final boolean save(Number number, String label, String expression) {
+        saveMetaData(label, expression);
+        Function f = findFuncShell(number);
+        f.init(label, expression);
+        return true;
+    }
+    
+    /* (non-Javadoc)
      * @see com.ociweb.purefat.ExpressionWriter#save(java.lang.Number, java.lang.String, java.lang.String, java.lang.Number)
      */
     @Override

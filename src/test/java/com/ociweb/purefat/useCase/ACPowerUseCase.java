@@ -16,7 +16,7 @@ public class ACPowerUseCase extends AbstractPureFATUseCase<Double, Double> {
     
     private final Double maxAmplitude = audit(120d,"maxAmplitude");
     private final Integer samplesPerCycle = audit(4, "samplesPerCycle");
-    private final Double sineRootMeanSquared = audit(1d/Math.sqrt(2d),"sineRootMeanSquared");//TODO: usecase missing. ,"(1/sqrt(2))"); 
+    private final Double sineRootMeanSquared = audit(1d/Math.sqrt(2d),"sineRootMeanSquared","(1/sqrt(2))"); 
     
     private final int ringBufferSize = samplesPerCycle;//results after 1 cycle
     private final Double[] ringBuffer = new Double[ringBufferSize];

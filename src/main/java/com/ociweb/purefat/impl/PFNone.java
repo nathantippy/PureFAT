@@ -120,6 +120,13 @@ public class PFNone implements PFImpl {
     }
 
     /* (non-Javadoc)
+     * @see com.ociweb.purefat.PFImpl#audit(double, java.lang.String, java.lang.String)
+     */
+    @Override
+    public void audit(Number value, String label, String expressionText) {
+    }
+    
+    /* (non-Javadoc)
      * @see com.ociweb.purefat.PFImpl#audit(double, java.lang.String, java.lang.String, java.lang.Number)
      */
     @Override

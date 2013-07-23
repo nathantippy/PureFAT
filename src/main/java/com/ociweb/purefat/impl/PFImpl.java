@@ -61,6 +61,8 @@ public interface PFImpl {
     void logAuditTrail(Number keyNumber, FATTemplate format);
 
     void audit(Number value, String label);
+    
+    void audit(Number value, String label, String expressionText);
 
     void audit(Number value, String label, String expressionText,
             Number p1);
