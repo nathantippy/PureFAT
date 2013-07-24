@@ -54,13 +54,9 @@ public class SpeedComparisons {
     double callCount = steps*steps;
     
     static {
-        //Only use the in-memory version to shorten testing time.
-     //  System.setProperty("purefat.internal", "true");
         //Do not use assertions, it makes testing inconsistent.
         System.setProperty("purefat.verbose", "true");
-        
     }
-    
 
     /**
      * This is not really a test and can not fail.
@@ -100,6 +96,7 @@ public class SpeedComparisons {
 
         //Test does NOT use the PFDefault implementation because it changes 
         //behavior based on -ea and makes testing harder.
+        System.setProperty("purefat.ringbuffer.size", "9000000");
         System.setProperty("purefat.ringbuffer.grow", "true");//helps speed up the test
         PFVerbose strictImpl = new PFVerbose(new FunctionAuditTrailInternal());
         temp = speedTestForceAudited(strictImpl,"boxed forced audited");
