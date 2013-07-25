@@ -140,7 +140,7 @@ public class FunctionAuditTrailExternal implements FunctionAuditTrail {
             sb.append(" ");
             
             
-            FunMetaData funMetaData = new FunMetaData(Thread.currentThread().getStackTrace());
+            FunMetaData funMetaData = new FunMetaData(Thread.currentThread().getStackTrace(),label,expression);
             sb.append(funMetaData.stackElement());
             
             pureFATLogger.trace(marker, sb.toString(),  pIdArray);
@@ -176,7 +176,7 @@ public class FunctionAuditTrailExternal implements FunctionAuditTrail {
                 }
             }
             
-            FunMetaData funMetaData = new FunMetaData(Thread.currentThread().getStackTrace());
+            FunMetaData funMetaData = new FunMetaData(Thread.currentThread().getStackTrace(),channelId,"");
             String value = wrapId(boxed)+boxed;
             synchronized(count) {
                 //channel<<<[xxxx]boxed line number
@@ -200,7 +200,7 @@ public class FunctionAuditTrailExternal implements FunctionAuditTrail {
                 }
             }
 
-            FunMetaData funMetaData = new FunMetaData(Thread.currentThread().getStackTrace());
+            FunMetaData funMetaData = new FunMetaData(Thread.currentThread().getStackTrace(),channelId,"");
             String value = wrapId(boxed)+boxed;
             //write to log in the same order we counted them.
             synchronized(count) {

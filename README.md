@@ -68,18 +68,19 @@ At the top of each file be sure to include PureFAT
 
         import static com.ociweb.purefat.PureFAT.*;
 
-Assign a simple label to a primitive value in the audit trail.
+Assign a simple label to a primitive value in the audit trail. NOTE: Labels must
+be unique within the project (see Roadmap for future plans).
 
         Double rpm = audit(0d, "initial");
 
 Add expression evaluation to the audit trail.  The first argument to the audit
 method is just the computed value as it would be computed normally.  The second
-argument is a label and the third is an SLF4j formatted template for the 
+argument is a unique label and the third is an SLF4j formatted template for the 
 expression.  Note that {} is used for each input value to the expression.  Also 
 note that it is recommended to surround these templates with () in order to ensure
 the correct order of precedence when one gets inserted into another. Lastly all
 the needed input values are passed in, these should be boxed by previous calls 
-to audit in order to produce the most helpful audit trails.  
+to audit in order to produce the most helpful audit trails.
 
         rpm = audit(samplesPerMinute / (double) samplesPerRevolution,
                     "rpm", 
@@ -128,7 +129,7 @@ the optimum size to speed up restarts if the max RAM size did not change.
 * Use java.lang.instrument.ClassFileTransformer to augment any usages of
 audit() so the expression template and params are injected. The only arguments
 required in the source will be the Number result and a unique label. This
-code will also validate/ensure that the labels are unique.
+code will also validate/ensure that the labels are unique across all the code.
 
 * Use ToolProvider.getSystemJavaCompiler() to ensure that each label
 is unique. Validating compiler to throw compile error if they are NOT. 

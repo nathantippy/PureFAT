@@ -65,9 +65,9 @@ public class MotorRPMUseCase extends AbstractPureFATUseCase<Number, Number> {
 
     Set<Number> toInvestigate = new HashSet<Number>();
 
-    Number last = audit(-1, "unknown");
-    Integer count = audit(0, "initial");
-    Double rpm = audit(0d, "initial");
+    Number last = audit(-1, "unknown01");
+    Integer count = audit(0, "initialCount");
+    Double rpm = audit(0d, "initialRPM"); //Label strings must be unique
 
     public MotorRPMUseCase(boolean testBrokenCode) {
         super(testBrokenCode);
@@ -85,7 +85,7 @@ public class MotorRPMUseCase extends AbstractPureFATUseCase<Number, Number> {
         auditIsGTE(sample, 0);
         auditIsLTE(sample, 1);
         if (last.equals(sample)) {
-            count = audit(count + 1, "count", "({}+1)", count);
+            count = audit(count + 1, "shaftSampleCount", "({}+1)", count);
         } else {
             // must not cause divide by zero error upon start up.
             // but DO allow it when we are testing the broken code case
@@ -98,7 +98,7 @@ public class MotorRPMUseCase extends AbstractPureFATUseCase<Number, Number> {
             }
             // reset count
             last = sample;
-            count = audit(1, "first");
+            count = audit(1, "firstShaftSample");
         }
 
         return rpm;

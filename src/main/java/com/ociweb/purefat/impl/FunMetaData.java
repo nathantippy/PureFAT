@@ -33,10 +33,17 @@ package com.ociweb.purefat.impl;
 
 public class FunMetaData {
 
-    static FunMetaData NONE = new FunMetaData(new StackTraceElement[]{});
+    static FunMetaData NONE = new FunMetaData(new StackTraceElement[]{},"","");
+    
+    private final String label;
+    private final String expression;
     private final StackTraceElement callInfo;
-
-    FunMetaData(StackTraceElement[] stackTrace) {
+    
+    
+    FunMetaData(StackTraceElement[] stackTrace, String label, String expressionText) {
+        this.label = label;
+        this.expression = expressionText;
+        
         int i = 0;
         while (++i<stackTrace.length) {
             if (!stackTrace[i].getClassName().contains("purefat.impl") &&
@@ -51,6 +58,14 @@ public class FunMetaData {
     
     public String stackElement() {
         return callInfo.toString();
+    }
+    
+    public String label() {
+        return label;
+    }
+    
+    public String expression() {
+        return expression;
     }
 
 }

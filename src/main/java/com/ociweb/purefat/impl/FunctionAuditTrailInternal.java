@@ -65,7 +65,7 @@ public class FunctionAuditTrailInternal implements FunctionAuditTrail  {
     //turned off later if an out of memory exception is encountered.
     private boolean                shouldGrowArray = RING_BUFFER_GROW_DEFAULT;
 
-    private final Map<String, Map<String,FunMetaData>> functionMeta = new HashMap<String,Map<String,FunMetaData>>();
+    private final Map<String,FunMetaData> functionMeta = new HashMap<String,FunMetaData>();
 
     public FunctionAuditTrailInternal() {
         this(Integer.parseInt(System.getProperty(RING_BUFFER_INITIAL_SIZE_KEY, Integer.toString(RING_BUFFER_INITIAL_SIZE))),
@@ -293,14 +293,8 @@ public class FunctionAuditTrailInternal implements FunctionAuditTrail  {
    }
 
     public final FunMetaData metaData(Function fun) {
-        String expressionText = fun.text();
-        Map<String,FunMetaData> m = functionMeta.get(expressionText);
-        if (null == m) {
-            return FunMetaData.NONE;
-        }
-        
-        String label = fun.labelName();
-        FunMetaData fmd = m.get(label);
+        String key = fun.labelName();
+        FunMetaData fmd = functionMeta.get(key);
         if (null == fmd) {
             return FunMetaData.NONE;
         } else {
@@ -309,14 +303,15 @@ public class FunctionAuditTrailInternal implements FunctionAuditTrail  {
     }
     
     private final void saveMetaData(String label, String expressionText) {
-        Map<String,FunMetaData> m = functionMeta.get(expressionText);
-        if (null == m) {
-            m = new HashMap<String,FunMetaData>();
-            functionMeta.put(expressionText, m);
+        String key = label;
+        FunMetaData funMeta = functionMeta.get(key);
+        if (null==funMeta) {
+            StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+            functionMeta.put(key,new FunMetaData(stackTrace,label,expressionText));
+        } else {
+            assert(funMeta.expression().equals(expressionText)) : "The label "+label+" is not unique within the project. Check: "+funMeta.stackElement();
         }
-        if (!m.containsKey(label)) {
-            m.put(label,new FunMetaData(Thread.currentThread().getStackTrace()));
-        }
+        
     }
 
     @Override

@@ -31,7 +31,7 @@ public class ACPowerUseCase extends AbstractPureFATUseCase<Double, Double> {
     protected Double simulatedSample(int idx) {
         Integer sampleIndex = continueAuditFrom("TestFramework", idx);
         Double radians = audit((idx*2d*Math.PI)/(double)samplesPerCycle,"radians","({}*2*pi/{})",sampleIndex,samplesPerCycle);
-        return audit(Math.sin(radians)*maxAmplitude,"voltage","sin({})*{}",radians,maxAmplitude);
+        return audit(Math.sin(radians)*maxAmplitude,"sampleVoltage","sin({})*{}",radians,maxAmplitude);
     }
     
     @Override
@@ -45,17 +45,17 @@ public class ACPowerUseCase extends AbstractPureFATUseCase<Double, Double> {
         }
         ringBuffer[ringBufferPos] = audit(Math.abs(sample),"abs","abs({})",sample);
         
-        Double sum = audit(0d,"initial");
-        Integer count = audit(0,"initial");
+        Double sum = audit(0d,"initialSum");
+        Integer count = audit(0,"initialCount");
         int i = ringBufferSize;
         while(--i>=0) {
             if (null!=ringBuffer[i]) {
-                sum = audit(sum+(ringBuffer[i]*ringBuffer[i]),"sum","({}+({}*{}))",sum,ringBuffer[i],ringBuffer[i]);
-                count = audit(count+1,"count","{}+1",count);
+                sum = audit(sum+(ringBuffer[i]*ringBuffer[i]),"sumAC","({}+({}*{}))",sum,ringBuffer[i],ringBuffer[i]);
+                count = audit(count+1,"countAC","({}+1)",count);
             }
         }
         Double rootMeanSquare = audit(Math.sqrt(sum/count),"rootMeanSquare","sqrt({}/{})",sum,count);
-        return audit(rootMeanSquare/sineRootMeanSquared,"voltage","({}/{})",rootMeanSquare,sineRootMeanSquared);
+        return audit(rootMeanSquare/sineRootMeanSquared,"computedVoltage","({}/{})",rootMeanSquare,sineRootMeanSquared);
     }
 
     @Override
