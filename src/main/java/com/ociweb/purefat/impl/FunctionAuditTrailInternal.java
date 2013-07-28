@@ -34,10 +34,7 @@ package com.ociweb.purefat.impl;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.CountDownLatch;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +50,9 @@ public class FunctionAuditTrailInternal implements FunctionAuditTrail  {
     private final static String RING_BUFFER_GROW_KEY = "purefat.ringbuffer.grow";
     
     private static final Logger logger = LoggerFactory.getLogger(FunctionAuditTrailInternal.class);
-    private final Object ringLock = new Object();
+    
+    private final Object lock = new Object();
+    private final CountDownLatch cdl = new CountDownLatch(1);
     
     private int                     bufferSize;
     private int                     lastBufferSize;
@@ -83,16 +82,33 @@ public class FunctionAuditTrailInternal implements FunctionAuditTrail  {
         shouldGrowArray = grow;
         bufferSize     = initialSize;
         lastBufferSize = initialSize;
+
+        Thread t = new Thread(new Runnable() {
+            //allow array construction to continue in the background
+            @Override
+            public void run() {
+                synchronized(lock) {
+                    //let the constructor continue, this thread now holds the lock
+                    cdl.countDown();
+                    bufferRefs = new WeakReference[bufferSize];
+                    funcShell = new Function[bufferSize];
+                    int j = bufferSize;
+                    while (--j>=0 && !Thread.interrupted()) {
+                        bufferRefs[j] =  new WeakReference<Number>(null);
+                        funcShell[j] = new Function(j);
+                        
+                    }
+                    logger.info("Internal FunctionAuditTrail initialized with {} elements.",bufferSize);
+                }
+            }});
         
-        bufferRefs = new WeakReference[bufferSize];
+        t.start();
         
-        funcShell = new Function[bufferSize];
-        int j = bufferSize;
-        while (--j>=0) {
-            bufferRefs[j] =  new WeakReference<Number>(null);
-            funcShell[j] = new Function(j);
+        try {
+            cdl.await();
+        } catch (InterruptedException e) {
+            t.interrupt();
         }
-        
     }
 
     public final Function get(Number key) {
@@ -113,7 +129,7 @@ public class FunctionAuditTrailInternal implements FunctionAuditTrail  {
      * @return
      */
     private final Function get(Number key, int startLookingFrom) {
-        synchronized(ringLock) {
+        synchronized(lock) {
             int i = startLookingFrom;
             do {
                 if (null!=bufferRefs[i] && bufferRefs[i].get()==key) {
@@ -124,7 +140,7 @@ public class FunctionAuditTrailInternal implements FunctionAuditTrail  {
                 }
             } while (i!=startLookingFrom);
             return null;//not found, looked everywhere
-       }
+        }
     }
 
     /* (non-Javadoc)
@@ -223,7 +239,7 @@ public class FunctionAuditTrailInternal implements FunctionAuditTrail  {
     private final Function findFuncShell(Number number) {
         WeakReference<Number> tempRef = new WeakReference<Number>(number);
        //always start with oldest position 
-       synchronized(ringLock) {
+       synchronized(lock) {
            int i = bufferPos+1;
            //shortcut!, don't do the complex work if we already have a winner
            if (i>=bufferSize || null != bufferRefs[i].get()) {

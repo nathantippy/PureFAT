@@ -114,7 +114,25 @@ System properties
 When using the in memory implementation the following properties apply.
 
 * **purefat.ringbuffer.size**  *This is the initial size of the ring buffer (default 1M)*
-* **purefat.ringbuffer.grow**  *Boolean if the ring buffer should grow as needed (default true)*
+* **purefat.ringbuffer.grow**  *Boolean if the ring buffer should grow as needed to improve performance (default true)*
+The ring buffer always grows as needed if the size of the audit trail demands.  As a result when 
+the audit trail is large and references to the computed values are kept long term it may run out of memory. 
+
+
+Best practices
+--------------
+
+To greatly speed up unit tests of your product give it as much RAM as possible and also 
+bump up the initial size of the internal ring buffer.  You may also want to explicitly request
+the internal implementation to ensure trace logs are not written to disk.
+
+        -ea
+        -Xmx7000m
+        -Dpurefat.internal=true
+        -Dpurefat.ringbuffer.size=32000000
+
+To reduce memory requirements let go of boxed computed values as soon as possible.  The internal implementation
+must hold the entire audit trail (which may be very large) for any values that have not yet been garbage collected.
 
 
 Roadmap 
