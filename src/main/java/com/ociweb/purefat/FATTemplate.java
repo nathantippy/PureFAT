@@ -33,22 +33,16 @@ package com.ociweb.purefat;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.helpers.MessageFormatter;
 
-import com.ociweb.purefat.impl.FunMetaData;
 import com.ociweb.purefat.impl.Function;
 import com.ociweb.purefat.impl.FunctionAuditTrail;
 import com.ociweb.purefat.impl.Util;
-import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
 
 public enum FATTemplate {
     table {

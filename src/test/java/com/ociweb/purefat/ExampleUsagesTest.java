@@ -33,12 +33,8 @@ package com.ociweb.purefat;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static com.ociweb.purefat.PureFAT.*;
 
 import java.util.Iterator;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -48,13 +44,10 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.qos.logback.classic.Level;
-
-import com.ociweb.purefat.impl.FATConstraintViolation;
 import com.ociweb.purefat.useCase.ACPowerUseCase;
 import com.ociweb.purefat.useCase.MotorRPMUseCase;
-import com.ociweb.purefat.useCase.foundation.TestablePureFATUseCase;
 import com.ociweb.purefat.useCase.foundation.ExpectedFailureCatalog;
+import com.ociweb.purefat.useCase.foundation.TestablePureFATUseCase;
 
 public class ExampleUsagesTest {
 
@@ -135,7 +128,7 @@ public class ExampleUsagesTest {
                             assertFalse("Failure expected at index " + index,
                                     expectedFailureCatalog
                                             .isFailureExpected(index));
-                        } catch (FATConstraintViolation cv) {
+                        } catch (AssertionError cv) {
                             logger.error(
                                     "isExpected:"
                                             + expectedFailureCatalog

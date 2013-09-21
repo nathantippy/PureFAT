@@ -64,7 +64,6 @@ public class SpeedComparisons {
      * The purpose of this code is for performance testing of new ideas.
      * 
      */
-    @Test 
     public void speedTest() {
         
         //side effect: this also initialized the internal static ring buffer
